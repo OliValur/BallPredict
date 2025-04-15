@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "spLGwtiBD92rk3TIQa+9Wgjtz5yc8mZgk0w85MnKKno=",
+  "Source": "BallPredict.Backend",
+  "BasePath": "_content/BallPredict.Backend",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

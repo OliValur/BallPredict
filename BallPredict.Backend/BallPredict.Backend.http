@@ -1,0 +1,6 @@
+@BallPredict.Backend_HostAddress = http://localhost:5245
+
+GET {{BallPredict.Backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
