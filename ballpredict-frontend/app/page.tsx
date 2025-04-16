@@ -7,15 +7,21 @@ export default function Home() {
   const { getToken } = useAuth();
 
   useEffect(() => {
-    const fetchToken = async () => {
+    const getWeather = async () => {
       const token = await getToken({ template: "supabase" });
+      const res = await fetch("http://localhost:5245/weatherforecast", {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
       console.log(token);
+      const data = await res.json();
+      console.log(data);
     };
-
-    fetchToken();
+    getWeather();
   }, [getToken]);
-
-  // make a request to
 
   return <div>Hæ</div>;
 }

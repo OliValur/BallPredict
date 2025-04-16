@@ -1,4 +1,14 @@
+
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using DotNetEnv;
+
 var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
+Env.Load();
+string clerkKey = Environment.GetEnvironmentVariable("CLERK_SECRET_KEY");
+Console.WriteLine(clerkKey);
 
 // Add services to the container.
 
@@ -6,15 +16,50 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(jwtOptions =>
+
+// Add JWT Authentication
+builder.Services.AddAuthentication(x =>
     {
-        jwtOptions.Authority = "https://{--your-authority--}";
-        jwtOptions.Audience = "https://{--your-audience--}";
+        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(x =>
+    {
+        x.Authority = config["JwtSettings:Issuer"]; //  Needed to fetch JWKS
+        x.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = config["JwtSettings:Issuer"],
+
+            ValidateAudience = true,
+            ValidAudience = config["JwtSettings:Audience"],
+
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true
+            //  Do NOT set IssuerSigningKey manually for RS256
+        };
     });
 
-var app = builder.Build();
+builder.Services.AddAuthorization();
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:3000") // or your frontend origin
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
+
+
+var app = builder.Build();
+app.UseCors(MyAllowSpecificOrigins);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -23,6 +68,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

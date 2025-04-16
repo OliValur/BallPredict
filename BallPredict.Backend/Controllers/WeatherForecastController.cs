@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BallPredict.Backend.Controllers
@@ -18,9 +19,12 @@ namespace BallPredict.Backend.Controllers
             _logger = logger;
         }
 
+        [Authorize]
         [HttpGet(Name = "GetWeatherForecast")]
+      
         public IEnumerable<WeatherForecast> Get()
         {
+            Console.WriteLine("Hæ");
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
