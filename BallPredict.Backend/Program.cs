@@ -3,12 +3,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using DotNetEnv;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 Env.Load();
-string clerkKey = Environment.GetEnvironmentVariable("CLERK_SECRET_KEY");
-Console.WriteLine(clerkKey);
+var supabaseKey = Environment.GetEnvironmentVariable("SUPABASE_SECRET_KEY");
 
 // Add services to the container.
 
@@ -16,6 +16,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers().AddNewtonsoftJson();
 
 // Add JWT Authentication
 builder.Services.AddAuthentication(x =>
@@ -28,6 +29,8 @@ builder.Services.AddAuthentication(x =>
         x.Authority = config["JwtSettings:Issuer"]; //  Needed to fetch JWKS
         x.TokenValidationParameters = new TokenValidationParameters
         {
+
+
             ValidateIssuer = true,
             ValidIssuer = config["JwtSettings:Issuer"],
 
@@ -35,8 +38,9 @@ builder.Services.AddAuthentication(x =>
             ValidAudience = config["JwtSettings:Audience"],
 
             ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(supabaseKey)),
             ValidateLifetime = true
-            //  Do NOT set IssuerSigningKey manually for RS256
+
         };
     });
 

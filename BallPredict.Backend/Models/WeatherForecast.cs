@@ -1,4 +1,4 @@
-namespace BallPredict.Backend
+namespace BallPredict.Backend.Models
 {
     public class WeatherForecast
     {

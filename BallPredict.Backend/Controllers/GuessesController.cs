@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using BallPredict.Backend.Models;
+using BallPredict.Backend.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -6,19 +9,38 @@ namespace BallPredict.Backend
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GuessesController : ControllerBase
+    public class GuessesController(SupabaseService supabase) : ControllerBase
     {
         // GET: api/<GuessesController>
+        [Authorize]
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<List<Guess>> Get()
         {
-            return new string[] { "value1", "value2" };
+            var url = Environment.GetEnvironmentVariable("SUPABASE_URL");
+            var key = Environment.GetEnvironmentVariable("SUPABASE_KEY");
+            var options = new Supabase.SupabaseOptions
+            {
+                AutoConnectRealtime = true
+            };
+            var supabase = new Supabase.Client(url, key, options);
+            await supabase.InitializeAsync();
+            var user_guesses = await supabase.From<Guess>().Get();
+            Console.WriteLine(user_guesses);
+            var guess = user_guesses.Models;
+            var guessList = new List<Guess>();
+            foreach (var g in guess)
+            {
+                guessList.Add(g);
+            }
+
+            return guessList;
         }
 
         // GET api/<GuessesController>/5
         [HttpGet("{id}")]
         public string Get(int id)
         {
+            Console.WriteLine(id);
             return "value";
         }
 
