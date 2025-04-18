@@ -12,10 +12,10 @@ namespace BallPredict.Backend.Services
         public GuessService(ISupabaseClientFactory supabaseFactory)
         => _supabaseFactory = supabaseFactory;
 
-        public async Task<List<Guess>> GetUserGuessesAsync()
+        public async Task<List<Guess>> GetUserGuessesAsync(List<Guid> userIds)
         {
             var client = await _supabaseFactory.CreateAsync();
-            var result = await client.From<Guess>().Get();
+            var result = await client.From<Guess>().Get().Filter(x => x.userId, Operator.In, userIds);
             return result.Models.ToList();
         }
 

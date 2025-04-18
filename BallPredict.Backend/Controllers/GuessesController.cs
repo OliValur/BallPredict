@@ -31,15 +31,8 @@ namespace BallPredict.Backend
             return Ok(guesses);
         }
 
-        // GET api/<GuessesController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            Console.WriteLine(id);
-            return "value";
-        }
-
         // POST api/<GuessesController>
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] GuessDto guessDto)
         {
@@ -58,14 +51,15 @@ namespace BallPredict.Backend
 
         // PUT api/<GuessesController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public void Put(int id, [FromBody] GuessDto guessDto)
         {
+            // Update the guess with the given id. If game has started or ended, return 403 Forbidden
+            // If the guess is not found, return 404 Not Found
+            // If the guess is found, update it and return 200 OK
+            return Ok();
+
         }
 
-        // DELETE api/<GuessesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+
     }
 }
