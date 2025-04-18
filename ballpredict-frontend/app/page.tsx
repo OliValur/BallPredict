@@ -9,14 +9,15 @@ export default function Home() {
   useEffect(() => {
     const getWeather = async () => {
       const token = await getToken({ template: "supabase" });
-      const res = await fetch("http://localhost:5245/weatherforecast", {
+      console.log(token);
+      const res = await fetch("http://localhost:5245/api/Guesses", {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(token);
+      console.log(res);
       const data = await res.json();
       console.log(data);
     };

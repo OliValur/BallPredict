@@ -1,14 +1,22 @@
-﻿namespace BallPredict.Backend.Services
+﻿using BallPredict.Backend.Models;
+using BallPredict.Backend.Services;
+using Supabase;
+
+namespace BallPredict.Backend.Services
 {
     public class GuessService
     {
-        private readonly SupabaseService _supabaseService;
+        private readonly ISupabaseClientFactory _supabaseFactory;
 
-        public List<Guess> getUserGuesses
 
-        public GuessService(SupabaseService supabaseService)
+        public GuessService(ISupabaseClientFactory supabaseFactory)
+        => _supabaseFactory = supabaseFactory;
+
+        public async Task<List<Guess>> GetUserGuessesAsync()
         {
-            _supabaseService = supabaseService;
+            var client = await _supabaseFactory.CreateAsync();
+            var result = await client.From<Guess>().Get();
+            return result.Models.ToList();
         }
     }
 }

@@ -9,13 +9,20 @@ namespace BallPredict.Backend
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GuessesController(SupabaseService supabase) : ControllerBase
+    public class GuessesController : ControllerBase
     {
+        private readonly GuessService _guessService;
+
+        public GuessesController(GuessService guessService)
+        {
+            _guessService = guessService;
+        }
         // GET: api/<GuessesController>
         [Authorize]
         [HttpGet]
-        public async Task<List<Guess>> Get()
+        public async Task<IActionResult> Get()
         {
+            /*
             var url = Environment.GetEnvironmentVariable("SUPABASE_URL");
             var key = Environment.GetEnvironmentVariable("SUPABASE_KEY");
             var options = new Supabase.SupabaseOptions
@@ -24,7 +31,11 @@ namespace BallPredict.Backend
             };
             var supabase = new Supabase.Client(url, key, options);
             await supabase.InitializeAsync();
+            
+            var SupaService = new SupabaseService();
             var user_guesses = await supabase.From<Guess>().Get();
+
+
             Console.WriteLine(user_guesses);
             var guess = user_guesses.Models;
             var guessList = new List<Guess>();
@@ -32,8 +43,11 @@ namespace BallPredict.Backend
             {
                 guessList.Add(g);
             }
+            */
+            var guesses = await _guessService.GetUserGuessesAsync();
+            Console.WriteLine(guesses);
 
-            return guessList;
+            return Ok(guesses);
         }
 
         // GET api/<GuessesController>/5

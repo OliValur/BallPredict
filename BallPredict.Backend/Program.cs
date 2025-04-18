@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using DotNetEnv;
 using System.Text;
+using BallPredict.Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -12,11 +13,23 @@ var supabaseKey = Environment.GetEnvironmentVariable("SUPABASE_SECRET_KEY");
 
 // Add services to the container.
 
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers().AddNewtonsoftJson();
+
+
+//Supabase related Services
+builder.Services
+    .Configure<SupabaseSettings>(builder.Configuration.GetSection("Supabase"));
+builder.Services.AddHttpContextAccessor();
+builder.Services
+    .AddScoped<ISupabaseClientFactory, SupabaseClientFactory>();
+
+
+builder.Services.AddScoped<GuessService>();
 
 // Add JWT Authentication
 builder.Services.AddAuthentication(x =>
