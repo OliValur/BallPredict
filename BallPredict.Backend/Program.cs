@@ -6,6 +6,7 @@ using DotNetEnv;
 using System.Text;
 using BallPredict.Backend.Services;
 
+
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 Env.Load();
@@ -32,30 +33,46 @@ builder.Services
 builder.Services.AddScoped<GuessService>();
 
 // Add JWT Authentication
-builder.Services.AddAuthentication(x =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+
+    options.Events = new JwtBearerEvents
     {
-        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(x =>
-    {
-        x.Authority = config["JwtSettings:Issuer"]; //  Needed to fetch JWKS
-        x.TokenValidationParameters = new TokenValidationParameters
+        OnMessageReceived = ctx =>
         {
+            //Console.WriteLine($"[Jwt] Authorization header: {ctx.Request.Headers["Authorization"]}");
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = ctx =>
+        {
+            //Console.WriteLine($"[Jwt]  Token validated for {ctx.Principal.Identity.Name}");
+            return Task.CompletedTask;
+        },
+        OnAuthenticationFailed = ctx =>
+        {
+            //Console.WriteLine($"[Jwt]  Authentication failed: {ctx.Exception?.Message}");
+            return Task.CompletedTask;
+        }
+    };
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = false,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(supabaseKey)),
+        ValidateIssuer = false,
+        ValidIssuer = "https://dykipnmqxaxdddzdnqpf.supabase.co",
+        ValidateAudience = false,
+        // Supabase tokens use "authenticated" as their `aud` claim for user sessions
+        ValidAudience = "authenticated",
+        ValidateLifetime = false
+    };
+});
 
-
-            ValidateIssuer = true,
-            ValidIssuer = config["JwtSettings:Issuer"],
-
-            ValidateAudience = true,
-            ValidAudience = config["JwtSettings:Audience"],
-
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(supabaseKey)),
-            ValidateLifetime = true
-
-        };
-    });
 
 builder.Services.AddAuthorization();
 
@@ -67,7 +84,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins("http://localhost:3000") // or your frontend origin
+                .WithOrigins("http://localhost:3000", "http://localhost:3000/api/guess") 
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });

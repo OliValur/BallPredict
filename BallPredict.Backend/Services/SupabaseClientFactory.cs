@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using BallPredict.Backend.Services;
 using Microsoft.Extensions.Options;
 using Supabase;
 
@@ -69,13 +70,17 @@ namespace BallPredict.Backend.Services
             var authHeader = _httpContextAccessor.HttpContext?
                 .Request.Headers["Authorization"]
                 .ToString();
+            var refreshHeader = _httpContextAccessor.HttpContext?
+                .Request.Headers["x-refresh-token"]
+                .ToString();
             var token = authHeader?.Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase);
-            Console.WriteLine(token);
+            
             if (string.IsNullOrWhiteSpace(token))
                 throw new UnauthorizedAccessException("JWT missing from Authorization header.");
 
-            // Note: this will not touch any other global Auth listeners
-            client.Auth.SetSession(token, Guid.NewGuid().ToString());
+            Console.WriteLine("refresh token" + refreshHeader);
+            await client.Auth.SetSession(token, refreshHeader);
+
 
             return client;
         }

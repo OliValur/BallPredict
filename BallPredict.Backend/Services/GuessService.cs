@@ -18,5 +18,13 @@ namespace BallPredict.Backend.Services
             var result = await client.From<Guess>().Get();
             return result.Models.ToList();
         }
+
+        public async Task<Boolean> AddGuessAsync(Guess guess)
+        {
+            var client = await _supabaseFactory.CreateAsync();
+            var result = await client.From<Guess>().Insert(guess);
+            //Console.WriteLine(result);
+            return true;
+        }
     }
 }

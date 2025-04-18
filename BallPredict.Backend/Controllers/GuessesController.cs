@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using BallPredict.Backend.Models;
 using BallPredict.Backend.Services;
+using BallPredict.Backend.DTOs;
+using System.IdentityModel.Tokens.Jwt;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,30 +24,9 @@ namespace BallPredict.Backend
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            /*
-            var url = Environment.GetEnvironmentVariable("SUPABASE_URL");
-            var key = Environment.GetEnvironmentVariable("SUPABASE_KEY");
-            var options = new Supabase.SupabaseOptions
-            {
-                AutoConnectRealtime = true
-            };
-            var supabase = new Supabase.Client(url, key, options);
-            await supabase.InitializeAsync();
-            
-            var SupaService = new SupabaseService();
-            var user_guesses = await supabase.From<Guess>().Get();
-
-
-            Console.WriteLine(user_guesses);
-            var guess = user_guesses.Models;
-            var guessList = new List<Guess>();
-            foreach (var g in guess)
-            {
-                guessList.Add(g);
-            }
-            */
+           
             var guesses = await _guessService.GetUserGuessesAsync();
-            Console.WriteLine(guesses);
+            //Console.WriteLine(guesses);
 
             return Ok(guesses);
         }
@@ -60,8 +41,19 @@ namespace BallPredict.Backend
 
         // POST api/<GuessesController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> Post([FromBody] GuessDto guessDto)
         {
+            var userId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString());
+
+            //Console.WriteLine(userId);
+            var Guess = new Guess
+            {
+                gameId = guessDto.GameId,
+                userId = userId,
+                guess = guessDto.Guess
+            };
+            var result = await _guessService.AddGuessAsync(Guess);
+            return Ok(result);
         }
 
         // PUT api/<GuessesController>/5
