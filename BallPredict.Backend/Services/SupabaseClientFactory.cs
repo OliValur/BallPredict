@@ -75,10 +75,7 @@ namespace BallPredict.Backend.Services
                 .ToString();
             var token = authHeader?.Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase);
             
-            if (string.IsNullOrWhiteSpace(token))
-                throw new UnauthorizedAccessException("JWT missing from Authorization header.");
 
-            Console.WriteLine("refresh token" + refreshHeader);
             await client.Auth.SetSession(token, refreshHeader);
 
 

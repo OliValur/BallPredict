@@ -17,6 +17,8 @@ namespace BallPredict.Backend.Services
 
             var userId = jwt.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
 
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new UnauthorizedAccessException("Refresh token missing from x-refresh-token header.");
             return userId;
         }
         public static string GetRefreshToken(string token)
@@ -25,6 +27,9 @@ namespace BallPredict.Backend.Services
             var jwt = handler.ReadJwtToken(token);
             Console.WriteLine("LEsinn token: " + jwt);
             var refreshToken = jwt.Claims.FirstOrDefault(c => c.Type == "refresh_token")?.Value;
+
+            if (string.IsNullOrWhiteSpace(refreshToken))
+                throw new UnauthorizedAccessException("Refresh token missing from x-refresh-token header.");
             return refreshToken;
         }
     }

@@ -22,10 +22,10 @@ namespace BallPredict.Backend
         // GET: api/<GuessesController>
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromBody] List<Guid> userIds)
         {
            
-            var guesses = await _guessService.GetUserGuessesAsync();
+            var guesses = await _guessService.GetUserGuessesAsync(userIds);
             //Console.WriteLine(guesses);
 
             return Ok(guesses);
