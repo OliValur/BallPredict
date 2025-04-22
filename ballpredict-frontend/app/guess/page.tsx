@@ -8,8 +8,6 @@ export default function GuessPage() {
     const { data: sessionData, error: sessionError } =
       await supabase.auth.getSession();
     const refreshToken = sessionData.session?.refresh_token;
-    console.log("refresharing token" + refreshToken);
-    console.log(sessionData);
     const res = await fetch("http://localhost:5245/api/Guesses", {
       method: "POST",
       headers: {
@@ -23,7 +21,6 @@ export default function GuessPage() {
         guess: 2, // an integer
       }),
     });
-
     if (!res.ok) {
       // handle error...
       console.error("Server rejected:", await res.text());
@@ -36,11 +33,40 @@ export default function GuessPage() {
     console.log(data);
   }
 
+  async function getGuesses() {
+    const supabase = await createClient();
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession();
+    const refreshToken = sessionData.session?.refresh_token;
+    const res = await fetch("http://localhost:5245/api/Guesses", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionData.session?.access_token}`,
+        "x-refresh-token": refreshToken ?? "",
+      },
+    });
+    if (!res.ok) {
+      // handle error...
+      console.error("Server rejected:", await res.text());
+    } else {
+      const guesses = await res.json();
+      console.log(guesses);
+    }
+  }
   return (
     <div>
-      <button className="bg-amber-500" onClick={handleClick}>
-        SÆKJA!!!
-      </button>
+      <div>
+        <button className="bg-amber-500" onClick={handleClick}>
+          Búa til Gisk
+        </button>
+      </div>
+      <div>
+        <button className="bg-red-500 mt-4" onClick={getGuesses}>
+          Sækja Gisk
+        </button>
+      </div>
     </div>
   );
 }

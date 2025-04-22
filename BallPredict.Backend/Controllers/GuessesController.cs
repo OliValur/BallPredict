@@ -22,11 +22,24 @@ namespace BallPredict.Backend
         // GET: api/<GuessesController>
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Get([FromBody] List<Guid> userIds)
+        public async Task<IActionResult> Get()
         {
-           
-            var guesses = await _guessService.GetUserGuessesAsync(userIds);
-            //Console.WriteLine(guesses);
+            var userId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString());
+            var guesses = await _guessService.GetUserGuessesAsync(userId);
+            Console.WriteLine(guesses);
+
+            return Ok(guesses);
+        }
+
+        // GET: api/<GuessesController>/league/{leagueId}
+        [Authorize]
+        [HttpGet("league/{leagueId}")]
+
+        public async Task<IActionResult> Get(Guid leagueGuid)
+        {
+            var userId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString());
+            var guesses = await _guessService.GetUserGuessesAsync(userId);
+            Console.WriteLine(guesses);
 
             return Ok(guesses);
         }
@@ -48,10 +61,10 @@ namespace BallPredict.Backend
             var result = await _guessService.AddGuessAsync(Guess);
             return Ok(result);
         }
-
+        /*
         // PUT api/<GuessesController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] GuessDto guessDto)
+        public async Task<IActionResult> Put(int id, [FromBody] GuessDto guessDto)
         {
             // Update the guess with the given id. If game has started or ended, return 403 Forbidden
             // If the guess is not found, return 404 Not Found
@@ -59,7 +72,7 @@ namespace BallPredict.Backend
             return Ok();
 
         }
-
+        */
 
     }
 }

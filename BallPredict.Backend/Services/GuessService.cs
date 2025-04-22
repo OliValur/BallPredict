@@ -1,5 +1,6 @@
 ﻿using BallPredict.Backend.Models;
 using BallPredict.Backend.Services;
+//using Postgrest.Constants;
 using Supabase;
 
 namespace BallPredict.Backend.Services
@@ -12,13 +13,18 @@ namespace BallPredict.Backend.Services
         public GuessService(ISupabaseClientFactory supabaseFactory)
         => _supabaseFactory = supabaseFactory;
 
-        public async Task<List<Guess>> GetUserGuessesAsync(List<Guid> userIds)
+
+        public async Task<List<Guess>> GetUserGuessesAsync( string userId)
         {
             var client = await _supabaseFactory.CreateAsync();
-            var result = await client.From<Guess>().Get().Filter(x => x.userId, Operator.In, userIds);
+
+            var result = await client
+                .From<Guess>()
+                .Where(x => x.userId == userId)
+                .Get();
+
             return result.Models.ToList();
         }
-
         public async Task<Boolean> AddGuessAsync(Guess guess)
         {
             var client = await _supabaseFactory.CreateAsync();
