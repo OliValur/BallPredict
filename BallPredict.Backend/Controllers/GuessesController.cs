@@ -22,7 +22,7 @@ namespace BallPredict.Backend
         // GET: api/<GuessesController>
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromHeader(Name = "x-refresh-token")] string refreshToken)
         {
             var userId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString());
             var guesses = await _guessService.GetUserGuessesAsync(userId);
@@ -35,7 +35,7 @@ namespace BallPredict.Backend
         [Authorize]
         [HttpGet("league/{leagueId}")]
 
-        public async Task<IActionResult> Get(Guid leagueGuid)
+        public async Task<IActionResult> Get(Guid leagueGuid, [FromHeader(Name = "x-refresh-token")] string refreshToken)
         {
             var userId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString());
             var guesses = await _guessService.GetUserGuessesAsync(userId);

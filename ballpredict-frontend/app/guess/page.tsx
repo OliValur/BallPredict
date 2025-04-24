@@ -8,12 +8,15 @@ export default function GuessPage() {
     const { data: sessionData, error: sessionError } =
       await supabase.auth.getSession();
     const refreshToken = sessionData.session?.refresh_token;
+    const sessionToken = sessionData.session?.access_token;
+    console.log("Session Token:", sessionToken);
+    console.log("Refresh Token:", refreshToken);
     const res = await fetch("http://localhost:5245/api/Guesses", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionData.session?.access_token}`,
+        Authorization: `Bearer ${sessionToken}`,
         "x-refresh-token": refreshToken ?? "",
       },
       body: JSON.stringify({
@@ -28,9 +31,9 @@ export default function GuessPage() {
       const created = await res.json();
       console.log("Saved guess:", created);
     }
-    console.log(res);
+    //console.log(res);
     const data = await res.json();
-    console.log(data);
+    //console.log(data);
   }
 
   async function getGuesses() {
@@ -55,6 +58,29 @@ export default function GuessPage() {
       console.log(guesses);
     }
   }
+  async function getMultipleUserGuesses() {
+    const supabase = await createClient();
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession();
+    const refreshToken = sessionData.session?.refresh_token;
+    const res = await fetch("http://localhost:5245/api/Guesses", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionData.session?.access_token}`,
+        "x-refresh-token": refreshToken ?? "",
+      },
+    });
+    if (!res.ok) {
+      // handle error...
+      console.error("Server rejected:", await res.text());
+    } else {
+      const guesses = await res.json();
+      console.log(guesses);
+    }
+  }
+
   return (
     <div>
       <div>
