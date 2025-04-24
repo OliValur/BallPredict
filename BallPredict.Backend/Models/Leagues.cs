@@ -14,10 +14,6 @@ namespace BallPredict.Backend.Models
 
         [Column("sport")]
         public string Sport { get; set; }
-        [Column("owner_id")]
-        public string OwnerId { get; set; }
-        [Column("invite_code")]
-        public string? InviteCode { get; set; }
 
     }
 }

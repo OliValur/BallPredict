@@ -38,12 +38,10 @@ namespace BallPredict.Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(string name, string sport_type)
         {
-            var userId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString());
             var league = new Leagues
             {
                 Name = name,
-                Sport = sport_type,
-                OwnerId = userId
+                Sport = sport_type
             };
             var createdLeague = await _leagueService.CreateLeague(league);
             if (createdLeague != null)
