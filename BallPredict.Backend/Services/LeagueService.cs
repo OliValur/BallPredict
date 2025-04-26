@@ -1,4 +1,5 @@
-﻿using BallPredict.Backend.Models;
+﻿using BallPredict.Backend.DTOs;
+using BallPredict.Backend.Models;
 using BallPredict.Backend.Services;
 //using Postgrest.Constants;
 using Supabase;
@@ -31,6 +32,16 @@ namespace BallPredict.Backend.Services
         {
             var client = await _supabaseFactory.CreateAsync();
             var result = await client.From<Guess>().Insert(guess);
+            //Console.WriteLine(result);
+            return true;
+        }
+
+        public async Task<Boolean> JoinLeague(LeagueMembers leagueMemebers)
+        {
+            Console.WriteLine("Halló! " + leagueMemebers.PlayerId + "             " + leagueMemebers.LeagueId);
+            var client = await _supabaseFactory.CreateAsync();
+
+            var result = await client.From<LeagueMembers>().Insert(leagueMemebers);
             //Console.WriteLine(result);
             return true;
         }
