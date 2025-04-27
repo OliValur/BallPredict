@@ -2,6 +2,7 @@
 using BallPredict.Backend.Services;
 //using Postgrest.Constants;
 using Supabase;
+using static Supabase.Postgrest.Constants;
 
 namespace BallPredict.Backend.Services
 {
@@ -14,16 +15,25 @@ namespace BallPredict.Backend.Services
         => _supabaseFactory = supabaseFactory;
 
 
-        public async Task<List<Guess>> GetUserGuessesAsync( string userId)
+        public async Task<List<Games>> GetUserGuessesAsync(string userId, int week)
         {
             var client = await _supabaseFactory.CreateAsync();
 
             var result = await client
-                .From<Guess>()
-                .Where(x => x.userId == userId)
-                .Get();
+        .From<Games>()
+        .Select("*")
+        .Where(x => x.Week == week)
 
-            return result.Models.ToList();
+        .Get();
+            Console.WriteLine(result);
+            var gamesWithGuesses = result.Models.ToList();
+            foreach (var game in gamesWithGuesses)
+            {
+                var guesses = game.Guesses;
+                var userGuesses = guesses.Where(x => x.userId == userId).ToList();
+                game.Guesses = userGuesses;
+            }
+            return gamesWithGuesses;
         }
         public async Task<Boolean> AddGuessAsync(Guess guess)
         {

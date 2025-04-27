@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div>
       Hæ
-      <Link href="/guess">Guess</Link>
+      <Link href="/guess">Gues</Link>
     </div>
   );
 }

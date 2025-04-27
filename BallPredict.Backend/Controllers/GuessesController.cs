@@ -4,6 +4,7 @@ using BallPredict.Backend.Models;
 using BallPredict.Backend.Services;
 using BallPredict.Backend.DTOs;
 using System.IdentityModel.Tokens.Jwt;
+using BallPredict.Backend.Controllers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,7 +12,7 @@ namespace BallPredict.Backend
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GuessesController : ControllerBase
+    public class GuessesController : BaseController
     {
         private readonly GuessService _guessService;
 
@@ -21,17 +22,18 @@ namespace BallPredict.Backend
         }
         // GET: api/<GuessesController>
         [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> Get([FromHeader(Name = "x-refresh-token")] string refreshToken)
+        [HttpGet("week/{week}")]
+        public async Task<IActionResult> Get([FromRoute] int week)
         {
-            var userId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString());
-            var guesses = await _guessService.GetUserGuessesAsync(userId);
+            var userId = GetUserId();
+            var guesses = await _guessService.GetUserGuessesAsync(userId, week);
             Console.WriteLine(guesses);
 
             return Ok(guesses);
         }
 
         // GET: api/<GuessesController>/league/{leagueId}
+        /*
         [Authorize]
         [HttpGet("league/{leagueId}")]
 
@@ -43,8 +45,9 @@ namespace BallPredict.Backend
 
             return Ok(guesses);
         }
-
+        */
         // POST api/<GuessesController>
+        /*
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] GuessDto guessDto)
@@ -61,6 +64,7 @@ namespace BallPredict.Backend
             var result = await _guessService.AddGuessAsync(Guess);
             return Ok(result);
         }
+        */
         /*
         // PUT api/<GuessesController>/5
         [HttpPut("{id}")]

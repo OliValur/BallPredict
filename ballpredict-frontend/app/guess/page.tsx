@@ -40,7 +40,7 @@ export default function GuessPage() {
     const { data: sessionData } = await supabase.auth.getSession();
     const refreshToken = sessionData.session?.refresh_token;
 
-    const res = await fetch("http://localhost:5245/api/Guesses", {
+    const res = await fetch("http://localhost:5245/api/Guesses/week/1", {
       method: "GET",
       headers: {
         Accept: "application/json",

@@ -18,7 +18,7 @@ namespace BallPredict.Backend.Services
             var userId = jwt.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
 
             if (string.IsNullOrWhiteSpace(userId))
-                throw new UnauthorizedAccessException("Refresh token missing from x-refresh-token header.");
+                throw new UnauthorizedAccessException("User not valid");
             return userId;
         }
         public static string GetRefreshToken(string token)
