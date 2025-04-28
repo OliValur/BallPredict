@@ -76,7 +76,7 @@ namespace BallPredict.Backend.Services
             var token = authHeader?.Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase);
             System.Console.WriteLine(authHeader);
 
-            await client.Auth.SetSession(token, refreshHeader);
+            //await client.Auth.SetSession(token, refreshHeader);
 
 
             return client;
