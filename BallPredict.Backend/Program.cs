@@ -32,7 +32,6 @@ builder.Services.AddSwaggerGen(c =>
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Description = "Enter 'Bearer {token}'"
     });
-    c.OperationFilter<AddRefreshTokenHeader>();
     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
     {
         {
@@ -56,11 +55,11 @@ builder.Services
     .Configure<SupabaseSettings>(builder.Configuration.GetSection("Supabase"));
 builder.Services.AddHttpContextAccessor();
 builder.Services
-    .AddScoped<ISupabaseClientFactory, SupabaseClientFactory>();
+    .AddSingleton<ISupabaseClientFactory, SupabaseClientFactory>();
 
 
-builder.Services.AddScoped<GuessService>();
-builder.Services.AddScoped<LeagueService>();
+builder.Services.AddSingleton<GuessService>();
+builder.Services.AddSingleton<LeagueService>();
 
 // Add JWT Authentication
 builder.Services.AddAuthentication(options =>

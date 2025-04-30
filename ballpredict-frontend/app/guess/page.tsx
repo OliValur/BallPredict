@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import GameGuesses from "@/components/GameGuesses";
 
 export default function GuessPage() {
   const [leagueName, setLeagueName] = useState("");
@@ -113,6 +114,7 @@ export default function GuessPage() {
 
   return (
     <div className="p-4 space-y-4">
+      <GameGuesses />
       <div>
         <button className="bg-amber-500 p-2 rounded" onClick={handleClick}>
           Búa til Gisk

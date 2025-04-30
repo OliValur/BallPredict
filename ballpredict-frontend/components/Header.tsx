@@ -1,6 +1,11 @@
 import Link from "next/link";
+import React from "react";
 
-export default function Header() {
+type HeaderProps = {
+  children?: React.ReactNode;
+};
+
+export default function Header({ children }: HeaderProps) {
   return (
     <header className="flex justify-between items-center p-4 bg-gray-800 text-white">
       <h1 className="text-xl font-bold">My App</h1>
@@ -17,6 +22,7 @@ export default function Header() {
           </Link>
         </ul>
       </nav>
+      <div className="flex items-center space-x-4">{children}</div>
     </header>
   );
 }
