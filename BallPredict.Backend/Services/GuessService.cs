@@ -17,6 +17,7 @@ namespace BallPredict.Backend.Services
 
         public async Task<List<Games>> GetUserGuessesAsync(string userId, int week)
         {
+            Console.WriteLine("Fyrir Create Async");
             var client = await _supabaseFactory.CreateAsync();
 
             var resulttvo = await client

@@ -15,7 +15,7 @@ namespace BallPredict.Backend.Services
         /// <summary>Base URL of your Supabase project.</summary>
         public string Url { get; set; } = Environment.GetEnvironmentVariable("SUPABASE_URL");
         /// <summary>Service role key or anon key for your Supabase project.</summary>
-        public string Key { get; set; } = Environment.GetEnvironmentVariable("SUPABASE_SECRET_KEY");
+        public string Key { get; set; } = Environment.GetEnvironmentVariable("SUPABASE_KEY");
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ namespace BallPredict.Backend.Services
             }
 
             // 2) Spin up a fresh client
-            var options = new SupabaseOptions { AutoConnectRealtime = true };
+            var options = new SupabaseOptions { AutoConnectRealtime = false };
             var client = new Client(_settings.Url, _settings.Key, options);
 
             // 3) Initialize connection (async)
