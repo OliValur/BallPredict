@@ -14,9 +14,9 @@ namespace BallPredict.Backend.Services
             string token = bearerToken.Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase);
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(token);
-
+            Console.WriteLine("ÞETTA ER JWT:" + jwt);
             var userId = jwt.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-
+            Console.WriteLine("USER ID: " + userId);
             if (string.IsNullOrWhiteSpace(userId))
                 throw new UnauthorizedAccessException("User not valid");
             return userId;

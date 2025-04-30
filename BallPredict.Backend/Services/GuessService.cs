@@ -19,6 +19,13 @@ namespace BallPredict.Backend.Services
         {
             var client = await _supabaseFactory.CreateAsync();
 
+            var resulttvo = await client
+                .From<Guess>()
+                .Select("*")
+
+                .Get();
+            Console.WriteLine("tveir:" + resulttvo);
+            var res2 = resulttvo.Models.ToList();
             var result = await client
         .From<Games>()
         .Select("*")
@@ -27,8 +34,10 @@ namespace BallPredict.Backend.Services
         .Get();
             Console.WriteLine(result);
             var gamesWithGuesses = result.Models.ToList();
+            Console.WriteLine(gamesWithGuesses.Count);
             foreach (var game in gamesWithGuesses)
             {
+                Console.WriteLine(game.AwayTeam);
                 var guesses = game.Guesses;
                 var userGuesses = guesses.Where(x => x.userId == userId).ToList();
                 game.Guesses = userGuesses;

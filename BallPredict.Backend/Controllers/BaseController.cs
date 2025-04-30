@@ -16,10 +16,10 @@ namespace BallPredict.Backend.Controllers
                 throw new UnauthorizedAccessException("Authorization header missing.");
 
             var userIdString = JwtHelper.GetUserIdFromToken(authHeader);
-
+            /*
             if (!Guid.TryParse(userIdString, out var userId))
                 throw new UnauthorizedAccessException("Invalid user ID.");
-
+            */
             return userIdString;
         }
     }

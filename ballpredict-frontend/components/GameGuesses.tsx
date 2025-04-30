@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
 import { useState, useEffect } from "react";
-import { getGamesAndUserGuesses } from "@/services/api";
+import { useGamesAndUserGuesses } from "@/services/api";
 
 export default function GameGuesses() {
   const [gameGuesses, setGameGuesses] = useState([]);
-
+  const { getGamesAndUserGuesses } = useGamesAndUserGuesses();
   useEffect(() => {
     async function fetchGameGuesses() {
       try {

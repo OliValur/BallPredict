@@ -62,45 +62,53 @@ builder.Services.AddSingleton<GuessService>();
 builder.Services.AddSingleton<LeagueService>();
 
 // Add JWT Authentication
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-
-    options.Events = new JwtBearerEvents
+builder.Services.AddAuthentication(x =>
     {
-        OnMessageReceived = ctx =>
+        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(x =>
+    {
+        x.Authority = config["JwtSettings:Issuer"]; //  Needed to fetch JWKS
+
+        x.TokenValidationParameters = new TokenValidationParameters
         {
-            //Console.WriteLine($"[Jwt] Authorization header: {ctx.Request.Headers["Authorization"]}");
-            return Task.CompletedTask;
-        },
-        OnTokenValidated = ctx =>
+
+
+            ValidateIssuer = true,
+            ValidIssuer = config["JwtSettings:Issuer"],
+
+            ValidateAudience = true,
+            ValidAudience = config["JwtSettings:Audience"],
+
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true
+
+        };
+        x.Events = new JwtBearerEvents
         {
-            //Console.WriteLine($"[Jwt]  Token validated for {ctx.Principal.Identity.Name}");
-            return Task.CompletedTask;
-        },
-        OnAuthenticationFailed = ctx =>
-        {
-            //Console.WriteLine($"[Jwt]  Authentication failed: {ctx.Exception?.Message}");
+            OnTokenValidated = context =>
+            {
+                var aud = context.Principal?.FindFirst("aud")?.Value;
+                Console.WriteLine($" Token audience: {aud}");
+                return Task.CompletedTask;
+            },
+            OnMessageReceived = context =>
+            {
+                var token = context.Request.Headers["Authorization"].ToString();
+                Console.WriteLine($" Incoming JWT: {token}");
+                var aud = context.Principal?.FindFirst("aud")?.Value;
+                Console.WriteLine($" Token audience: {aud}");
+                return Task.CompletedTask;
+               
+            },
+            OnAuthenticationFailed = context =>
+            {
+            Console.WriteLine($" JWT auth failed: {context.Exception.Message}");
             return Task.CompletedTask;
         }
-    };
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = false,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(supabaseKey)),
-        ValidateIssuer = false,
-        ValidIssuer = "https://dykipnmqxaxdddzdnqpf.supabase.co",
-        ValidateAudience = false,
-        // Supabase tokens use "authenticated" as their `aud` claim for user sessions
-        ValidAudience = "authenticated",
-        ValidateLifetime = false
-    };
-});
+        };
+    });
 
 
 builder.Services.AddAuthorization();

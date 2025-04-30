@@ -40,11 +40,10 @@ namespace BallPredict.Backend.Controllers
             Console.WriteLine(leagueId);
 
             var userId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString());
-            Guid userGuid = Guid.Parse(userId);
             LeagueMembers leagueMembers = new LeagueMembers
             {
                 LeagueId = leagueId,
-                PlayerId = userGuid
+                PlayerId = userId
             };
             var result = await _leagueService.JoinLeague(leagueMembers);
             if (result)

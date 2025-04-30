@@ -15,7 +15,7 @@ namespace BallPredict.Backend.Models
         [Column("sport")]
         public string Sport { get; set; }
         [Column("owner")]
-        public Guid OwnerId { get; set; }
+        public string OwnerId { get; set; }
 
 
     }
