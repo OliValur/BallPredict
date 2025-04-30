@@ -18,31 +18,32 @@ namespace BallPredict.Backend.Services
 
         public async Task<Leagues> CreateLeague(Leagues league)
         {
-            Console.WriteLine("Halló! " + league);
             var client = await _supabaseFactory.CreateAsync();
-
-            var result = await client.From<Leagues>()
-                .Insert(league);
-            var createdLeague = result.Models.FirstOrDefault();
-            Console.WriteLine("Hér: " + result);
-            return createdLeague;
+            try
+            {
+                var result = await client.From<Leagues>()
+                    .Insert(league);
+                var createdLeague = result.Models.FirstOrDefault();
+                return createdLeague;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error creating league: " + ex.Message);
+                return null;
+            }
         }
 
         public async Task<Boolean> AddGuessAsync(Guess guess)
         {
             var client = await _supabaseFactory.CreateAsync();
             var result = await client.From<Guess>().Insert(guess);
-            //Console.WriteLine(result);
             return true;
         }
 
         public async Task<Boolean> JoinLeague(LeagueMembers leagueMemebers)
         {
-            Console.WriteLine("Halló! " + leagueMemebers.PlayerId + "             " + leagueMemebers.LeagueId);
             var client = await _supabaseFactory.CreateAsync();
-
             var result = await client.From<LeagueMembers>().Insert(leagueMemebers);
-            //Console.WriteLine(result);
             return true;
         }
 

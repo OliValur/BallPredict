@@ -44,7 +44,7 @@ namespace BallPredict.Backend.Controllers
             var league = new Leagues
             {
                 Name = leagueDto.Name,
-                Sport = leagueDto.SportType
+                OwnerId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString())
             };
             var createdLeague = await _leagueService.CreateLeague(league);
             if (createdLeague != null)

@@ -9,7 +9,7 @@ export default function GameGuesses() {
   useEffect(() => {
     async function fetchGameGuesses() {
       try {
-        const data = await getGamesAndUserGuesses(1);
+        const data = await getGamesAndUserGuesses(3);
         console.log("Fetched game guesses:", data);
       } catch (error) {
         console.error("Error fetching game guesses:", error);

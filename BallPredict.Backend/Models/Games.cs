@@ -28,9 +28,7 @@ namespace BallPredict.Backend.Models
         [Column("away_team_score")]
         public int? AwayTeamScore { get; set; }
 
-        // Add this:
-        [Reference(typeof(Guess))]
-        public List<Guess> Guesses { get; set; } = new();
+        public List<Guess>? Guesses { get; set; } = new();
     }
 
 }

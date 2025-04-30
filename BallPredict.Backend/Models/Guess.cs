@@ -3,7 +3,7 @@ using Supabase.Postgrest.Attributes;
 
 namespace BallPredict.Backend.Models
 {
-    [Table("Guess")]
+    [Table("Guesses")]
     public class Guess : BaseModel
     {
         [PrimaryKey("id")]

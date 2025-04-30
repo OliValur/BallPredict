@@ -1,5 +1,7 @@
 ﻿using BallPredict.Backend.Models;
 using BallPredict.Backend.Services;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
 //using Postgrest.Constants;
 using Supabase;
 using static Supabase.Postgrest.Constants;
@@ -8,47 +10,38 @@ namespace BallPredict.Backend.Services
 {
     public class GuessService
     {
-        private readonly ISupabaseClientFactory _supabaseFactory;
-
+        private readonly Client _supabaseClient;
 
         public GuessService(ISupabaseClientFactory supabaseFactory)
-        => _supabaseFactory = supabaseFactory;
-
-
+        {
+            _supabaseClient = supabaseFactory.CreateAsync().GetAwaiter().GetResult();
+        }
         public async Task<List<Games>> GetUserGuessesAsync(string userId, int week)
         {
-            Console.WriteLine("Fyrir Create Async");
-            var client = await _supabaseFactory.CreateAsync();
-
-            var resulttvo = await client
+            var games = await _supabaseClient
+                .From<Games>()
+                .Select("*")
+                .Where(x => x.Week == week)
+                .Get();
+            var gamesList = games.Models.ToList();
+            var guesses = await _supabaseClient
                 .From<Guess>()
                 .Select("*")
-
+                .Where(x => x.userId == userId)
                 .Get();
-            Console.WriteLine("tveir:" + resulttvo);
-            var res2 = resulttvo.Models.ToList();
-            var result = await client
-        .From<Games>()
-        .Select("*")
-        .Where(x => x.Week == week)
-
-        .Get();
-            Console.WriteLine(result);
-            var gamesWithGuesses = result.Models.ToList();
-            Console.WriteLine(gamesWithGuesses.Count);
-            foreach (var game in gamesWithGuesses)
+            var guessesList = guesses.Models.ToList();
+            foreach (var game in gamesList)
             {
-                Console.WriteLine(game.AwayTeam);
-                var guesses = game.Guesses;
-                var userGuesses = guesses.Where(x => x.userId == userId).ToList();
-                game.Guesses = userGuesses;
+                game.Guesses = guessesList 
+                    .Where(g => g.gameId == game.Id)
+                    .ToList();
             }
-            return gamesWithGuesses;
+            return gamesList;
         }
+
         public async Task<Boolean> AddGuessAsync(Guess guess)
         {
-            var client = await _supabaseFactory.CreateAsync();
-            var result = await client.From<Guess>().Insert(guess);
+            var result = await _supabaseClient.From<Guess>().Insert(guess);
             //Console.WriteLine(result);
             return true;
         }

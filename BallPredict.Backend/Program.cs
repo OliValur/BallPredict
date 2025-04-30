@@ -85,6 +85,7 @@ builder.Services.AddAuthentication(x =>
             ValidateIssuerSigningKey = true
 
         };
+        /*
         x.Events = new JwtBearerEvents
         {
             OnTokenValidated = context =>
@@ -107,7 +108,9 @@ builder.Services.AddAuthentication(x =>
             Console.WriteLine($" JWT auth failed: {context.Exception.Message}");
             return Task.CompletedTask;
         }
+        
         };
+        */
     });
 
 

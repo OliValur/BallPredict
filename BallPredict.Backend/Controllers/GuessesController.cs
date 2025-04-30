@@ -47,24 +47,24 @@ namespace BallPredict.Backend
         }
         */
         // POST api/<GuessesController>
-        /*
+        
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] GuessDto guessDto)
         {
-            var userId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString());
+            var userId = JwtHelper.GetUserIdFromToken(Request.Headers.Authorization);
 
             //Console.WriteLine(userId);
             var Guess = new Guess
             {
                 gameId = guessDto.GameId,
                 userId = userId,
-                guess = guessDto.Guess
+                guess = guessDto.Prediction
             };
             var result = await _guessService.AddGuessAsync(Guess);
             return Ok(result);
         }
-        */
+        
         /*
         // PUT api/<GuessesController>/5
         [HttpPut("{id}")]
