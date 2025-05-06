@@ -1,27 +1,39 @@
-import { useAuth } from "@clerk/clerk-react";
+// services/api-client.ts
 
-export function useGamesAndUserGuesses() {
-  const { getToken } = useAuth();
+export async function getGamesAndUserGuesses(week: number, token: string) {
+  const res = await fetch(`http://localhost:5245/api/Guesses/week/${week}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-  async function getGamesAndUserGuesses(week: number) {
-    const token = await getToken({ template: "supabase" });
-    console.log("Token:", token);
-    const res = await fetch(`http://localhost:5245/api/Guesses/week/${week}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+  return res.json();
+}
 
-    if (!res.ok) {
-      console.error("Server rejected:", await res.text());
-      return null;
-    }
+export async function submitGuess(
+  gameId: number,
+  guess: string,
+  token: string
+) {
+  const res = await fetch(`http://localhost:5245/api/Guesses/${gameId}`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ guess }),
+  });
 
-    return await res.json();
+  if (!res.ok) {
+    throw new Error(await res.text());
   }
 
-  return { getGamesAndUserGuesses };
+  return res.json();
 }

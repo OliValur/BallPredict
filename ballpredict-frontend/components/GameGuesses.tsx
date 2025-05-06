@@ -1,27 +1,36 @@
 "use client";
-import React from "react";
-import { useState, useEffect } from "react";
-import { useGamesAndUserGuesses } from "@/services/api";
+import { useAuth } from "@clerk/clerk-react";
+import { useQuery } from "@tanstack/react-query";
+import { getGamesAndUserGuesses } from "@/services/api";
 
 export default function GameGuesses() {
-  const [gameGuesses, setGameGuesses] = useState([]);
-  const { getGamesAndUserGuesses } = useGamesAndUserGuesses();
-  useEffect(() => {
-    async function fetchGameGuesses() {
-      try {
-        const data = await getGamesAndUserGuesses(3);
-        console.log("Fetched game guesses:", data);
-      } catch (error) {
-        console.error("Error fetching game guesses:", error);
-      }
-    }
+  const { getToken } = useAuth();
 
-    fetchGameGuesses();
-  }, []);
+  const query = useQuery({
+    queryKey: ["gameGuesses"],
+    queryFn: async () => {
+      const token = await getToken({ template: "supabase" });
+      if (!token) {
+        throw new Error("No token found");
+      }
+      const data = await getGamesAndUserGuesses(1, token);
+      console.log("Fetched data:", data);
+      return data;
+    },
+  });
+
+  if (query.isLoading) return <p>Loading...</p>;
+  if (query.isError) return <p>Error: {(query.error as Error).message}</p>;
+
   return (
     <div>
       <h1>Game Guesses</h1>
-      <p>Game guesses page content goes here.</p>
+      {query.data.map((game: any) => (
+        <div key={game.id}>
+          <p>{game.awayTeam}</p>
+          {/* could add guess logic here */}
+        </div>
+      ))}
     </div>
   );
 }
