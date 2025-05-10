@@ -51,7 +51,7 @@ export default function RootLayout({
               </SignedIn>
             </Header>
 
-            <div className="bg-blue-600 bg-cover h-screen">{children}</div>
+            <div className=" bg-cover h-screen">{children}</div>
           </body>
         </html>
       </ReactQueryClientProvider>

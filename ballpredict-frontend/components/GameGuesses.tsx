@@ -2,6 +2,7 @@
 import { useAuth } from "@clerk/clerk-react";
 import { useQuery } from "@tanstack/react-query";
 import { getGamesAndUserGuesses } from "@/services/api";
+import SeasonCountdown from "./SeasonCountdown";
 
 export default function GameGuesses() {
   const { getToken } = useAuth();
@@ -24,6 +25,7 @@ export default function GameGuesses() {
 
   return (
     <div>
+      <SeasonCountdown />
       <h1>Game Guesses</h1>
       {query.data.map((game: any) => (
         <div key={game.id}>

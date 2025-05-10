@@ -7,15 +7,15 @@ type HeaderProps = {
 
 export default function Header({ children }: HeaderProps) {
   return (
-    <header className="flex justify-between items-center p-4 bg-gray-800 text-white">
+    <header className="flex justify-between items-center p-4 bg-nflred text-white">
       <h1 className="text-xl font-bold">My App</h1>
       <nav>
         <ul className="flex space-x-4">
           <Link href="/" className="hover:text-gray-300">
             <li>Home</li>
           </Link>
-          <Link href="/profile" className="hover:text-gray-300">
-            <li>Profile</li>
+          <Link href="/myteam" className="hover:text-gray-300">
+            <li>My Team</li>
           </Link>
           <Link href="/settings" className="hover:text-gray-300">
             <li>Settings</li>

@@ -12,10 +12,15 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: light) {
+@theme {
+  --color-nflblue: #013369;
+  --color-nflred: #d50a0a;
+}
+
+@media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: nflblue;
+    --foreground: #nflred;
   }
 }
 

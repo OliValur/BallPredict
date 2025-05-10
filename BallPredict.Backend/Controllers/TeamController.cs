@@ -6,35 +6,36 @@ namespace BallPredict.Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+
+    public class TeamController : BaseController
     {
-        // GET: api/<UserController>
+        // GET: api/<TeamController>
         [HttpGet]
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/<UserController>/5
+        // GET api/<TeamController>/5
         [HttpGet("{id}")]
         public string Get(int id)
         {
             return "value";
         }
 
-        // POST api/<UserController>
+        // POST api/<TeamController>
         [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT api/<UserController>/5
+        // PUT api/<TeamController>/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE api/<UserController>/5
+        // DELETE api/<TeamController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
