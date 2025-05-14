@@ -27,8 +27,6 @@ namespace BallPredict.Backend
         {
             var userId = GetUserId();
             var guesses = await _guessService.GetUserGuessesAsync(userId, week);
-            Console.WriteLine(guesses);
-
             return Ok(guesses);
         }
 

@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BallPredict.Backend.DTOs;
+using Microsoft.AspNetCore.Mvc;
+
+using BallPredict.Backend.Services;
+using System.IdentityModel.Tokens.Jwt;
+using BallPredict.Backend.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -9,6 +14,13 @@ namespace BallPredict.Backend.Controllers
 
     public class TeamController : BaseController
     {
+        private readonly TeamService _teamService;
+
+        public TeamController(TeamService teamService)
+        {
+            _teamService = teamService;
+        }
+
         // GET: api/<TeamController>
         [HttpGet]
         public IEnumerable<string> Get()
@@ -25,8 +37,17 @@ namespace BallPredict.Backend.Controllers
 
         // POST api/<TeamController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Post([FromBody] TeamsDto teamDto)
         {
+            Console.WriteLine("Hæ");
+            var userId = JwtHelper.GetUserIdFromToken(Request.Headers.Authorization);
+            var team = new Teams
+            {
+                Team = teamDto.Team,
+                Id = userId
+            };
+            Console.WriteLine(team.Id);
+            var result = _teamService.AddTeam(team);
         }
 
         // PUT api/<TeamController>/5

@@ -17,9 +17,9 @@ const NFLCountdownRenderer = ({ days, hours, minutes, seconds, completed }) => {
 
   return (
     <div>
-      <div className="bg-nflblue text-white flex flex-col items-center justify-center p-4 rounded-lg shadow-lg w-1/2 md:w-1/2 lg:w-1/6  md:h-1/2 lg:h-1/6">
-        ⏱️ Countdown to Kickoff
-        <div className="flex flex-row justify-around mt-4 ">
+      <div className="bg-nflblue text-white flex flex-row items-center justify-evenly rounded-lg shadow-lg ">
+        ⏱️ Kickoff in:
+        <div className="flex flex-row ml-7">
           <div>
             <strong>{days}</strong>
             <div>DAYS</div>

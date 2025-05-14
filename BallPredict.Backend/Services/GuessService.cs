@@ -34,7 +34,7 @@ namespace BallPredict.Backend.Services
                     .Get();
                 cachedGames = games.Models.ToList();
                 var cacheOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(5));
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(60));
                 _memoryCache.Set($"games_week_{week}", cachedGames, cacheOptions);
 
                 Console.WriteLine("Fetched from database");
@@ -58,7 +58,7 @@ namespace BallPredict.Backend.Services
         public async Task<Boolean> AddGuessAsync(Guess guess)
         {
             var result = await _supabaseClient.From<Guess>().Insert(guess);
-            //Console.WriteLine(result);
+            //TODO check if the guess was added successfully
             return true;
         }
     }

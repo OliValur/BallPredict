@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { createTeam } from "@/services/api";
+import { useAuth } from "@clerk/clerk-react";
 
 export default function GuessPage() {
   const [leagueName, setLeagueName] = useState("");

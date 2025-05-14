@@ -60,6 +60,7 @@ builder.Services
 
 builder.Services.AddSingleton<GuessService>();
 builder.Services.AddSingleton<LeagueService>();
+builder.Services.AddSingleton<TeamService>();
 
 // Add JWT Authentication
 builder.Services.AddAuthentication(x =>
