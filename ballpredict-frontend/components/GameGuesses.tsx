@@ -1,5 +1,5 @@
 "use client";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, SignedIn, SignedOut } from "@clerk/clerk-react";
 import { useQuery } from "@tanstack/react-query";
 import { getGamesAndUserGuesses } from "@/services/api";
 import SeasonCountdown from "./SeasonCountdown";
@@ -25,14 +25,23 @@ export default function GameGuesses() {
 
   return (
     <div>
-      <SeasonCountdown />
-      <h1>Game Guesses</h1>
-      {query.data.map((game: any) => (
-        <div key={game.id}>
-          <p>{game.awayTeam}</p>
-          {/* could add guess logic here */}
+      <SignedIn>
+        <div>
+          <SeasonCountdown />
+          <h1>Game Guesses</h1>
+          {query.data.map((game: any) => (
+            <div key={game.id}>
+              <p>{game.awayTeam}</p>
+              {/* could add guess logic here */}
+            </div>
+          ))}
         </div>
-      ))}
+      </SignedIn>
+      <SignedOut>
+        <div>
+          <p>Please sign in to see your game guesses.</p>
+        </div>
+      </SignedOut>
     </div>
   );
 }

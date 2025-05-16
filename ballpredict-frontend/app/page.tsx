@@ -1,11 +1,9 @@
-import Link from "next/link";
 import GameGuesses from "@/components/GameGuesses";
+import SeasonCountdown from "@/components/SeasonCountdown";
 
 export default function Home() {
   return (
     <div>
-      Hæ
-      <Link href="/guess">Gues</Link>
       <GameGuesses />
     </div>
   );
