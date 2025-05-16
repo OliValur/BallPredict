@@ -11,6 +11,7 @@ export default function GameGuesses() {
     queryKey: ["gameGuesses"],
     queryFn: async () => {
       const token = await getToken({ template: "supabase" });
+      console.log("Token:", token);
       if (!token) {
         throw new Error("No token found");
       }
