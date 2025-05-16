@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using BallPredict.Backend.Services;
 using System.IdentityModel.Tokens.Jwt;
 using BallPredict.Backend.Models;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,6 +12,7 @@ namespace BallPredict.Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
 
     public class TeamController : BaseController
     {
