@@ -36,17 +36,39 @@ export async function createTeam(teamName: string, token: string) {
 
 export async function submitGuess(
   gameId: number,
-  guess: string,
+  guess: number,
   token: string
 ) {
-  const res = await fetch(`http://localhost:5245/api/Guesses/${gameId}`, {
+  const res = await fetch(`http://localhost:5245/api/Guesses/`, {
     method: "POST",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ guess }),
+    body: JSON.stringify({ GameId: gameId, Prediction: guess }),
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+
+  return res.json();
+}
+
+export async function updateGuess(
+  gameId: number,
+  guess: number,
+  token: string
+) {
+  const res = await fetch(`http://localhost:5245/api/Guesses/`, {
+    method: "PATCH",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ GameId: gameId, Prediction: guess }),
   });
 
   if (!res.ok) {

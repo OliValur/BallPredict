@@ -39,6 +39,7 @@ namespace BallPredict.Backend.Services
 
                 Console.WriteLine("Fetched from database");
             }
+            Console.WriteLine("fetch");
             var gamesList = cachedGames;
             var guesses = await _supabaseClient
                 .From<Guess>()
@@ -57,8 +58,16 @@ namespace BallPredict.Backend.Services
 
         public async Task<Boolean> AddGuessAsync(Guess guess)
         {
+            Console.WriteLine(guess.guess);
             var result = await _supabaseClient.From<Guess>().Insert(guess);
             //TODO check if the guess was added successfully
+            return true;
+        }
+
+        public async Task<Boolean> UpdateGuess(Guess guess)
+        {
+            var result = await _supabaseClient.From<Guess>().Where(x => x.gameId == guess.gameId && x.userId == guess.userId).Set(x => x.guess,  guess.guess).Update();
+
             return true;
         }
     }

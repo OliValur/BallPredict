@@ -1,8 +1,9 @@
 "use client";
-import { useAuth, SignedIn, SignedOut } from "@clerk/clerk-react";
+import { useAuth, SignedIn, SignedOut, SignIn } from "@clerk/clerk-react";
 import { useQuery } from "@tanstack/react-query";
 import { getGamesAndUserGuesses } from "@/services/api";
-import SeasonCountdown from "./SeasonCountdown";
+import { Game } from "@/types/game";
+import GameRow from "./GameRow";
 
 export default function GameGuesses() {
   const { getToken } = useAuth();
@@ -11,12 +12,10 @@ export default function GameGuesses() {
     queryKey: ["gameGuesses"],
     queryFn: async () => {
       const token = await getToken({ template: "supabase" });
-      console.log("Token:", token);
       if (!token) {
         throw new Error("No token found");
       }
       const data = await getGamesAndUserGuesses(1, token);
-      console.log("Fetched data:", data);
       return data;
     },
   });
@@ -25,22 +24,21 @@ export default function GameGuesses() {
   if (query.isError) return <p>Error: {(query.error as Error).message}</p>;
 
   return (
-    <div>
+    <div className="flex flex-col items-center justify-center bg-amber-300 w-full md:w-2/3">
       <SignedIn>
         <div>
-          <SeasonCountdown />
           <h1>Game Guesses</h1>
-          {query.data.map((game: any) => (
-            <div key={game.id}>
-              <p>{game.awayTeam}</p>
-              {/* could add guess logic here */}
-            </div>
-          ))}
+          <div>
+            {query.data.map((game: Game) => (
+              <GameRow key={game.id} {...game} />
+            ))}
+          </div>
         </div>
       </SignedIn>
       <SignedOut>
         <div>
           <p>Please sign in to see your game guesses.</p>
+          <SignIn />
         </div>
       </SignedOut>
     </div>

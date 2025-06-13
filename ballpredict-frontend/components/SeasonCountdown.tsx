@@ -1,4 +1,6 @@
-import Countdown from "react-countdown";
+"use client";
+
+import Countdown, { CountdownRenderProps } from "react-countdown";
 //TODO: Change the date and timezone to the actual NFL season start date
 export default function SeasonCountdown() {
   return (
@@ -10,7 +12,13 @@ export default function SeasonCountdown() {
 }
 
 //TODO: update renderer, add ts type for props
-const NFLCountdownRenderer = ({ days, hours, minutes, seconds, completed }) => {
+const NFLCountdownRenderer = ({
+  days,
+  hours,
+  minutes,
+  seconds,
+  completed,
+}: CountdownRenderProps) => {
   if (completed) {
     return <span style={{ color: "#0b6623" }}>🏈 Enjoy the season! 🏈</span>;
   }

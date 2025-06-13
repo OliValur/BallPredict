@@ -17,8 +17,8 @@ export default function Header({ children }: HeaderProps) {
           <Link href="/myteam" className="hover:text-gray-300">
             <li>My Team</li>
           </Link>
-          <Link href="/settings" className="hover:text-gray-300">
-            <li>Settings</li>
+          <Link href="/leaderboard" className="hover:text-gray-300">
+            <li>Leaderboard</li>
           </Link>
         </ul>
       </nav>

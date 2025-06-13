@@ -17,5 +17,7 @@ namespace BallPredict.Backend.Models
 
         [Column("guess")] 
         public int guess { get; set; }
+       
+
     }
 }

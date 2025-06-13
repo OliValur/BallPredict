@@ -27,6 +27,10 @@ namespace BallPredict.Backend.Models
 
         [Column("away_team_score")]
         public int? AwayTeamScore { get; set; }
+        [Column("result")]
+        public int? result { get; set; }
+        [Column("is_finished")]
+        public bool isFinished { get; set; }
 
         public List<Guess>? Guesses { get; set; } = new();
     }

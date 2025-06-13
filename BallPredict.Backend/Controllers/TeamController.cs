@@ -41,14 +41,12 @@ namespace BallPredict.Backend.Controllers
         [HttpPost]
         public void Post([FromBody] TeamsDto teamDto)
         {
-            Console.WriteLine("Hæ");
             var userId = JwtHelper.GetUserIdFromToken(Request.Headers.Authorization);
             var team = new Teams
             {
                 Team = teamDto.Team,
                 Id = userId
             };
-            Console.WriteLine(team.Id);
             var result = _teamService.AddTeam(team);
         }
 

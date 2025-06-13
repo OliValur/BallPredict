@@ -38,6 +38,5 @@ namespace BallPredict.Backend.Services
                 return null;
             }
         }
-
     }
 }
