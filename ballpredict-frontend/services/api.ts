@@ -77,3 +77,38 @@ export async function updateGuess(
 
   return res.json();
 }
+
+export async function createLeague(leagueName: string, token: string) {
+  const res = await fetch(`http://localhost:5245/api/League`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ Name: leagueName }),
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+
+  return res.json();
+}
+
+export async function joinLeague(leagueId: number, token: string) {
+  const res = await fetch(`http://localhost:5245/api/League/${leagueId}/join`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    return new Error(await res.text());
+  }
+
+  return res.json();
+}

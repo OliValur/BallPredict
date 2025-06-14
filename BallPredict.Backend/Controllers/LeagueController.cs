@@ -41,6 +41,7 @@ namespace BallPredict.Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] LeagueDto leagueDto)
         {
+            Console.WriteLine(leagueDto.Name);
             var league = new Leagues
             {
                 Name = leagueDto.Name,

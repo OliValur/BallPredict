@@ -48,4 +48,4 @@ namespace BallPredict.Backend.Services
         }
 
     }
-}
+} 

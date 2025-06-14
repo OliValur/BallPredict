@@ -20,6 +20,9 @@ export default function Header({ children }: HeaderProps) {
           <Link href="/leaderboard" className="hover:text-gray-300">
             <li>Leaderboard</li>
           </Link>
+          <Link href="/leagues" className="hover:text-gray-300">
+            <li>League</li>
+          </Link>
         </ul>
       </nav>
       <div className="flex items-center space-x-4">{children}</div>
