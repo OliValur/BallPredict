@@ -19,26 +19,11 @@ namespace BallPredict.Backend.Controllers
         {
             _leagueService = leagueService;
         }
-        // GET: api/<LeagueMembershipController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<LeagueMembershipController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
 
         // POST api/<LeagueMembershipController>/5
         [HttpPost("{leagueId}")]
         public async Task<IActionResult> Post([FromRoute] Guid leagueId)
         {
-            Console.WriteLine(leagueId);
-
             var userId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString());
             LeagueMembers leagueMembers = new LeagueMembers
             {
@@ -55,17 +40,32 @@ namespace BallPredict.Backend.Controllers
                 return BadRequest("Failed to join league");
             }
         }
-
-        // PUT api/<LeagueMembershipController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPost("join-by-code")]
+        public async Task<IActionResult> JoinByInviteCode([FromBody] JoinByCodeDto dto)
         {
-        }
+            var userId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString());
 
-        // DELETE api/<LeagueMembershipController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var league = await _leagueService.GetLeagueByInviteCode(dto.InviteCode);
+            if (league == null)
+            {
+                return NotFound("League not found for the given invite code");
+            }
+
+            LeagueMembers leagueMember = new LeagueMembers
+            {
+                LeagueId = league.Id,
+                PlayerId = userId
+            };
+
+            var result = await _leagueService.JoinLeague(leagueMember);
+            if (result)
+            {
+                return Ok(new { message = "Joined league successfully", leagueId = league.Id });
+            }
+            else
+            {
+                return BadRequest("Failed to join league");
+            }
         }
     }
 }

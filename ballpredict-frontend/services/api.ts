@@ -92,19 +92,22 @@ export async function createLeague(leagueName: string, token: string) {
   if (!res.ok) {
     throw new Error(await res.text());
   }
-
   return res.json();
 }
 
-export async function joinLeague(leagueId: number, token: string) {
-  const res = await fetch(`http://localhost:5245/api/League/${leagueId}/join`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export async function joinLeague(inviteCode: string, token: string) {
+  const res = await fetch(
+    `http://localhost:5245/api/LeagueMembership/join-by-code`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ InviteCode: inviteCode }),
+    }
+  );
 
   if (!res.ok) {
     return new Error(await res.text());

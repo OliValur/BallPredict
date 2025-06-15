@@ -74,9 +74,6 @@ namespace BallPredict.Backend.Services
                 .Request.Headers["x-refresh-token"]
                 .ToString();
             var token = authHeader?.Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase);
-            System.Console.WriteLine(authHeader);
-
-            //await client.Auth.SetSession(token, refreshHeader);
 
 
             return client;

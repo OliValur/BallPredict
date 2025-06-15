@@ -1,12 +1,9 @@
 ﻿using BallPredict.Backend.Models;
-using BallPredict.Backend.Services;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Memory;
 
 
 //using Postgrest.Constants;
 using Supabase;
-using static Supabase.Postgrest.Constants;
 
 namespace BallPredict.Backend.Services
 {
@@ -37,9 +34,7 @@ namespace BallPredict.Backend.Services
                     .SetSlidingExpiration(TimeSpan.FromMinutes(60));
                 _memoryCache.Set($"games_week_{week}", cachedGames, cacheOptions);
 
-                Console.WriteLine("Fetched from database");
             }
-            Console.WriteLine("fetch");
             var gamesList = cachedGames;
             var guesses = await _supabaseClient
                 .From<Guess>()
@@ -58,7 +53,6 @@ namespace BallPredict.Backend.Services
 
         public async Task<Boolean> AddGuessAsync(Guess guess)
         {
-            Console.WriteLine(guess.guess);
             var result = await _supabaseClient.From<Guess>().Insert(guess);
             //TODO check if the guess was added successfully
             return true;

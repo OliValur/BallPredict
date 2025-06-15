@@ -7,8 +7,8 @@ type HeaderProps = {
 
 export default function Header({ children }: HeaderProps) {
   return (
-    <header className="flex justify-between items-center p-4 bg-nflred text-white">
-      <h1 className="text-xl font-bold">My App</h1>
+    <header className="flex flex-row justify-between items-center p-4 bg-nflred text-white">
+      <h1 className="text-xl font-bold">NFL Guessr 🏈</h1>
       <nav>
         <ul className="flex space-x-4">
           <Link href="/" className="hover:text-gray-300">

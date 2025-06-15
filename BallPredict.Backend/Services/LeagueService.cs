@@ -1,6 +1,7 @@
-﻿using BallPredict.Backend.DTOs;
+﻿
 using BallPredict.Backend.Models;
-using BallPredict.Backend.Services;
+using Microsoft.Extensions.Caching.Memory;
+
 //using Postgrest.Constants;
 using Supabase;
 
@@ -9,21 +10,26 @@ namespace BallPredict.Backend.Services
 
     public class LeagueService
     {
-        private readonly ISupabaseClientFactory _supabaseFactory;
+        private readonly Client _supabaseClient;
 
 
-        public LeagueService(ISupabaseClientFactory supabaseFactory)
-            => _supabaseFactory = supabaseFactory;
-
-
+        public LeagueService(ISupabaseClientFactory supabaseFactory, IMemoryCache memoryCache)
+        {
+            _supabaseClient = supabaseFactory.CreateAsync().GetAwaiter().GetResult();
+        }
         public async Task<Leagues> CreateLeague(Leagues league)
         {
-            var client = await _supabaseFactory.CreateAsync();
             try
             {
-                var result = await client.From<Leagues>()
+                var result = await _supabaseClient.From<Leagues>()
                     .Insert(league);
                 var createdLeague = result.Models.FirstOrDefault();
+                var leagueMembers = new LeagueMembers
+                {
+                    LeagueId = createdLeague.Id,
+                    PlayerId = league.OwnerId
+                };
+                await JoinLeague(leagueMembers);
                 return createdLeague;
             }
             catch (Exception ex)
@@ -33,17 +39,26 @@ namespace BallPredict.Backend.Services
             }
         }
 
+        public async Task<LeagueInfo> GetLeagueByInviteCode(string inviteCode)
+        {
+            var response = await _supabaseClient
+                .From<LeagueInfo>()
+                .Where(l => l.InviteCode == inviteCode)
+                .Get();
+
+            return response.Models.FirstOrDefault();
+        }
+        /*
         public async Task<Boolean> AddGuessAsync(Guess guess)
         {
             var client = await _supabaseFactory.CreateAsync();
             var result = await client.From<Guess>().Insert(guess);
             return true;
         }
-
+        */
         public async Task<Boolean> JoinLeague(LeagueMembers leagueMemebers)
         {
-            var client = await _supabaseFactory.CreateAsync();
-            var result = await client.From<LeagueMembers>().Insert(leagueMemebers);
+            var result = await _supabaseClient.From<LeagueMembers>().Insert(leagueMemebers);
             return true;
         }
 
