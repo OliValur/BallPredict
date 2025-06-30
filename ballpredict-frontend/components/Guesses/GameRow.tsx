@@ -1,20 +1,23 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Game } from "@/types/game";
 import TeamBox from "./TeamBox";
 import { submitGuess, updateGuess } from "@/services/api";
-import { useAuth, useUser } from "@clerk/clerk-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export default function GameRow(game: Game) {
-  const { getToken } = useAuth();
-  const { user } = useUser();
+interface GameRowProps {
+  game: Game;
+  userId: string;
+  token: string;
+}
+export default function GameRow({ game, userId, token }: GameRowProps) {
   const queryClient = useQueryClient();
 
-  const userId = user?.id;
   const isStarted = new Date(game.startTime) < new Date();
   const startDate = new Date(game.startTime);
-  const currentGuess = game.guesses?.find((g) => g.userId === userId);
+  const [currentGuess, setCurrentGuess] = useState(
+    game.guesses?.find((g) => g.userId === userId)
+  );
 
   const options = {
     weekday: "long",
@@ -27,19 +30,15 @@ export default function GameRow(game: Game) {
 
   const createGuessMutation = useMutation({
     mutationFn: async (guess: { gameId: number; guess: number }) => {
-      const token = await getToken({ template: "supabase" });
-      if (!token) throw new Error("No token found");
+      setCurrentGuess({ userId, guess: guess.guess });
       return submitGuess(guess.gameId, guess.guess, token);
     },
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["gameGuesses"] }),
+
     onError: (error) => console.error("Error submitting guess:", error),
   });
 
   const updateGuessMutation = useMutation({
     mutationFn: async (guess: { gameId: number; guess: number }) => {
-      const token = await getToken({ template: "supabase" });
-      if (!token) throw new Error("No token found");
       return updateGuess(guess.gameId, guess.guess, token);
     },
     onSuccess: () =>
@@ -78,14 +77,14 @@ export default function GameRow(game: Game) {
   const getScoreBlock = () => {
     if (!game.isFinished) {
       return (
-        <div className="w-full py-2 text-center text-sm text-gray-300 bg-gray-800">
+        <div className="w-full py-2 text-center text-sm text-gray-300 ">
           {getStatusDisplay()}
         </div>
       );
     }
 
     return (
-      <div className="flex items-center justify-center gap-4 px-4 py-2 bg-gray-800 text-sm text-white">
+      <div className="flex items-center justify-center gap-4 px-4 py-2  text-sm text-white">
         <div className="min-w-[40px] text-center">{game.awayTeamScore}</div>
         <div className="w-1/3 text-center font-medium">
           {getStatusDisplay()}

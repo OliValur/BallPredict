@@ -1,5 +1,11 @@
 "use client";
-import { useAuth, SignedIn, SignedOut, SignIn } from "@clerk/clerk-react";
+import {
+  useAuth,
+  useUser,
+  SignedIn,
+  SignedOut,
+  SignIn,
+} from "@clerk/clerk-react";
 import { useQuery } from "@tanstack/react-query";
 import { getGamesAndUserGuesses } from "@/services/api";
 import { Game } from "@/types/game";
@@ -8,6 +14,12 @@ import { useState } from "react";
 
 export default function GameGuesses() {
   const { getToken } = useAuth();
+  const token = getToken({ template: "supabase" });
+  const userId = useUser();
+  if (!token) {
+    throw new Error("No token found");
+  }
+
   const [selectedWeek, setSelectedWeek] = useState(1);
 
   const query = useQuery({
@@ -36,7 +48,7 @@ export default function GameGuesses() {
               <button
                 key={week}
                 onClick={() => setSelectedWeek(week)}
-                className={`px-4 py-2 m-2 rounded-lg ${
+                className={`px-4 py-2 m-2 rounded-lg hover:shadow-md cursor-pointer ${
                   selectedWeek === week
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200 text-black"
@@ -51,7 +63,12 @@ export default function GameGuesses() {
               Games for Week {selectedWeek}
             </h2>
             {query.data.map((game: Game) => (
-              <GameRow key={game.id} {...game} />
+              <GameRow
+                key={game.id}
+                game={game}
+                userId={userId}
+                token={token}
+              />
             ))}
           </div>
         </div>
