@@ -30,6 +30,8 @@ export default function TeamBox({
     bgColor = "bg-green-600";
   } else if (isWinner === false) {
     bgColor = "bg-red-600";
+  } else if (isGuess) {
+    bgColor = "bg-blue-600";
   }
 
   return (
@@ -44,11 +46,8 @@ export default function TeamBox({
         height={40}
         className="my-2"
       />
-      <span className="text-sm text-gray-200">
-        {teamScore !== null ? `Score: ${teamScore}` : "—"}
-      </span>
       {isGuess && (
-        <span className="mt-1 text-xs font-medium text-yellow-300">
+        <span className="mt-1 text-xl font-medium text-yellow-300">
           {isCorrect === true
             ? "✅ Your Pick (Correct)"
             : isCorrect === false

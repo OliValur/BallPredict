@@ -1,4 +1,5 @@
 "use client";
+
 import {
   useAuth,
   useUser,
@@ -10,33 +11,38 @@ import { useQuery } from "@tanstack/react-query";
 import { getGamesAndUserGuesses } from "@/services/api";
 import { Game } from "@/types/game";
 import GameRow from "./GameRow";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function GameGuesses() {
   const { getToken } = useAuth();
-  const token = getToken({ template: "supabase" });
-  const userId = useUser();
-  if (!token) {
-    throw new Error("No token found");
-  }
-
+  const { user, isLoaded } = useUser();
+  const [token, setToken] = useState<string | null>(null);
   const [selectedWeek, setSelectedWeek] = useState(1);
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const fetched = await getToken({ template: "supabase" });
+      setToken(fetched || null);
+    };
+    fetchToken();
+  }, [getToken]);
 
   const query = useQuery({
     queryKey: ["gameGuesses", selectedWeek],
     queryFn: async () => {
-      const token = await getToken({ template: "supabase" });
-      if (!token) {
-        throw new Error("No token found");
-      }
-      const data = await getGamesAndUserGuesses(selectedWeek, token);
-      return data;
+      if (!token) throw new Error("No token found");
+      return getGamesAndUserGuesses(selectedWeek, token);
     },
+    enabled: !!token,
   });
-  const weeks: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-  if (query.isLoading) return <p>Loading...</p>;
+  const weeks = Array.from({ length: 10 }, (_, i) => i + 1);
+
+  if (!isLoaded || query.isLoading) return <p>Loading...</p>;
   if (query.isError) return <p>Error: {(query.error as Error).message}</p>;
+
+  const userId = user?.id;
+  if (!userId || !token) return <p>Not authenticated</p>;
 
   return (
     <div className="flex flex-col items-center justify-center bg-amber-300 w-full md:w-2/3">
@@ -59,7 +65,7 @@ export default function GameGuesses() {
             ))}
           </div>
           <div>
-            <h2 className="mt-4 text-lg font-semibold">
+            <h2 className="mt-4 text-lg font-semibold text-center">
               Games for Week {selectedWeek}
             </h2>
             {query.data.map((game: Game) => (
@@ -68,6 +74,9 @@ export default function GameGuesses() {
                 game={game}
                 userId={userId}
                 token={token}
+                initialGuess={
+                  game.guesses?.find((g) => g.userId === userId) || null
+                }
               />
             ))}
           </div>

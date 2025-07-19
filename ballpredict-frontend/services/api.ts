@@ -17,7 +17,6 @@ export async function getGamesAndUserGuesses(week: number, token: string) {
 }
 
 export async function createTeam(teamName: string, token: string) {
-  console.log("Creating team with name:", teamName, "and token:", token);
   const res = await fetch(`http://localhost:5245/api/Team`, {
     method: "POST",
     headers: {

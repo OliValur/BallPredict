@@ -4,21 +4,23 @@ import { Game } from "@/types/game";
 import TeamBox from "./TeamBox";
 import { submitGuess, updateGuess } from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@clerk/nextjs";
 
 interface GameRowProps {
   game: Game;
   userId: string;
   token: string;
+  initialGuess?: { guess: number } | null;
 }
-export default function GameRow({ game, userId, token }: GameRowProps) {
-  const queryClient = useQueryClient();
-
-  const isStarted = new Date(game.startTime) < new Date();
+export default function GameRow({
+  game,
+  userId,
+  token,
+  initialGuess,
+}: GameRowProps) {
   const startDate = new Date(game.startTime);
-  const [currentGuess, setCurrentGuess] = useState(
-    game.guesses?.find((g) => g.userId === userId)
-  );
-
+  const isStarted = startDate < new Date();
+  const [currentGuess, setCurrentGuess] = useState(initialGuess);
   const options = {
     weekday: "long",
     year: "numeric",
@@ -30,10 +32,11 @@ export default function GameRow({ game, userId, token }: GameRowProps) {
 
   const createGuessMutation = useMutation({
     mutationFn: async (guess: { gameId: number; guess: number }) => {
-      setCurrentGuess({ userId, guess: guess.guess });
       return submitGuess(guess.gameId, guess.guess, token);
     },
-
+    onSuccess: (_, variables) => {
+      setCurrentGuess({ guess: variables.guess });
+    },
     onError: (error) => console.error("Error submitting guess:", error),
   });
 
@@ -41,8 +44,9 @@ export default function GameRow({ game, userId, token }: GameRowProps) {
     mutationFn: async (guess: { gameId: number; guess: number }) => {
       return updateGuess(guess.gameId, guess.guess, token);
     },
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["gameGuesses"] }),
+    onSuccess: (_, variables) => {
+      setCurrentGuess({ guess: variables.guess });
+    },
     onError: (error) => console.error("Error updating guess:", error),
   });
 
@@ -100,7 +104,7 @@ export default function GameRow({ game, userId, token }: GameRowProps) {
     <div
       className={`mb-4 rounded-lg border border-white ${containerBg} text-white shadow-md`}
     >
-      <div className="flex flex-row items-center justify-between p-4 border-b border-white">
+      <div className="flex flex-row items-center justify-between p-1  border-white md:bg-amber-50">
         {/* Away Team */}
         <button
           disabled={isStarted}
