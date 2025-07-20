@@ -29,13 +29,31 @@ export default function GameRow({
     hour: "2-digit",
     minute: "2-digit",
   } as const;
-
+  const queryClient = useQueryClient();
   const createGuessMutation = useMutation({
     mutationFn: async (guess: { gameId: number; guess: number }) => {
       return submitGuess(guess.gameId, guess.guess, token);
     },
     onSuccess: (_, variables) => {
       setCurrentGuess({ guess: variables.guess });
+      queryClient.setQueryData(["gameGuesses", game.week], (oldGames) => {
+        if (!oldGames) return oldGames;
+
+        return oldGames.map((g) => {
+          if (g.id !== variables.gameId) return g;
+
+          const newGuess = { userId, guess: variables.guess };
+
+          return {
+            ...g,
+            guesses: [
+              // remove old guess by same user
+              ...g.guesses.filter((guess) => guess.userId !== userId),
+              newGuess,
+            ],
+          };
+        });
+      });
     },
     onError: (error) => console.error("Error submitting guess:", error),
   });

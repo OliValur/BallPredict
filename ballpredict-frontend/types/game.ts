@@ -11,4 +11,5 @@ export type Game = {
     userId: string;
     guess: number;
   }[];
+  week: number;
 };

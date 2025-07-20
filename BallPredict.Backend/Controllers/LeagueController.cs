@@ -21,21 +21,26 @@ namespace BallPredict.Backend.Controllers
             _leagueService = leagueService;
         }
 
-        /*
+        
         // GET: api/<LeagueController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<List<Leagues>> Get()
         {
-            return new string[] { "value1", "value2" };
+            var leagues = new List<Leagues>();
+            string  userId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString());
+            leagues = await _leagueService.GetLeaguesByUserId(userId);
+            return leagues;
         }
-
+        
         // GET api/<LeagueController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<List<Teams>> Get(Guid id)
         {
-            return "value";
+            Console.WriteLine("Kemst hingað!");
+            var teams = await _leagueService.GetLeagueById(id);
+            return teams;
         }
-        */
+        
 
         // POST api/<LeagueController>
         [HttpPost]

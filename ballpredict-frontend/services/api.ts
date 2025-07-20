@@ -114,3 +114,42 @@ export async function joinLeague(inviteCode: string, token: string) {
 
   return res.json();
 }
+
+export async function getUserLeagues(token: string) {
+  const res = await fetch(`http://localhost:5245/api/League`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    next: {
+      revalidate: 600,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+  return res.json();
+}
+
+export async function getLeagueScores(leagueId: string, token: string) {
+  console.log("Fetching league scores for leagueId:", token);
+  const res = await fetch(`http://localhost:5245/api/League/${leagueId}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    next: {
+      revalidate: 600,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+  return res.json();
+}

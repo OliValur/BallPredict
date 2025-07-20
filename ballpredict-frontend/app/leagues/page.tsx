@@ -19,7 +19,7 @@ export default function LeaguesPage() {
       //if response is successful, redirect user to the leaderboard page for that league
       if (response && response.id) {
         console.log("League created with ID:", response.id);
-        router.push("/leaderboard");
+        router.push(`/leaderboard/${response.id}`);
       }
       console.log("League created successfully:", response);
     } catch (error) {
@@ -28,7 +28,7 @@ export default function LeaguesPage() {
   };
 
   const joinLeagueHandler = async (formData: FormData) => {
-    const inviteCode = formData.get("leagueId") as string;
+    const inviteCode = formData.get("inviteCode") as string;
     if (inviteCode.length != 8) {
       console.error("Invalid invite code length. It should be 6 characters.");
       return;
@@ -56,8 +56,8 @@ export default function LeaguesPage() {
         <p>Enter league name:</p>
         <input
           type="text"
-          name="inviteCode"
-          placeholder="Invite Code"
+          name="leagueName"
+          placeholder="Entar league name"
           required
         />
         <button type="submit">Create League</button>
@@ -65,7 +65,12 @@ export default function LeaguesPage() {
 
       <Form action={joinLeagueHandler}>
         <p>Join a league:</p>
-        <input type="text" name="leagueId" placeholder="League ID" required />
+        <input
+          type="text"
+          name="inviteCode"
+          placeholder="Enter the invite code here"
+          required
+        />
         <button type="submit">Join League </button>
       </Form>
     </div>
