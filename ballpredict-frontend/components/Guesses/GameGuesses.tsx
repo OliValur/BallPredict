@@ -45,26 +45,26 @@ export default function GameGuesses() {
   if (!userId || !token) return <p>Not authenticated</p>;
 
   return (
-    <div className="flex flex-col items-center justify-center bg-amber-300 w-full md:w-2/3">
+    <div className="mx-auto w-full max-w-3xl space-y-4 p-4">
       <SignedIn>
         <div>
-          <h1>Game Guesses</h1>
-          <div>
+          <h1 className="mb-2 text-center text-2xl font-bold">Game Guesses</h1>
+          <div className="flex flex-wrap justify-center gap-2">
             {weeks.map((week) => (
               <button
                 key={week}
                 onClick={() => setSelectedWeek(week)}
-                className={`px-4 py-2 m-2 rounded-lg hover:shadow-md cursor-pointer ${
+                className={`rounded-md border px-3 py-1 text-sm transition-colors  ${
                   selectedWeek === week
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-black"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 text-black hover:bg-gray-300"
                 }`}
               >
                 Week {week}
               </button>
             ))}
           </div>
-          <div>
+          <div className="space-y-4">
             <h2 className="mt-4 text-lg font-semibold text-center">
               Games for Week {selectedWeek}
             </h2>

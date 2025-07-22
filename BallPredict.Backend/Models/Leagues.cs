@@ -14,7 +14,5 @@ namespace BallPredict.Backend.Models
 
         [Column("owner")]
         public string OwnerId { get; set; }
-
-
     }
 }

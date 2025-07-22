@@ -36,7 +36,6 @@ namespace BallPredict.Backend.Controllers
         [HttpGet("{id}")]
         public async Task<List<Teams>> Get(Guid id)
         {
-            Console.WriteLine("Kemst hingað!");
             var teams = await _leagueService.GetLeagueById(id);
             return teams;
         }

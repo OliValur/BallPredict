@@ -7,7 +7,7 @@ namespace BallPredict.Backend.Services
         /// <summary>
         /// Extracts the user ID from a JWT token.
         /// </summary>
-        /// <param name="token">JWT token from Clerk</param>
+        /// <param name="token">JWT bearer token from Clerk</param>
         /// <returns>The "sub" field in the payload from the JWT</returns>
         public static string GetUserIdFromToken(string bearerToken)
         {

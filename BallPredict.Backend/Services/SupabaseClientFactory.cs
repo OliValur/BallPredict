@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using BallPredict.Backend.Services;
 using Microsoft.Extensions.Options;
 using Supabase;
 
@@ -14,69 +14,73 @@ namespace BallPredict.Backend.Services
     {
         /// <summary>Base URL of your Supabase project.</summary>
         public string Url { get; set; } = Environment.GetEnvironmentVariable("SUPABASE_URL");
+
         /// <summary>Service role key or anon key for your Supabase project.</summary>
         public string Key { get; set; } = Environment.GetEnvironmentVariable("SUPABASE_KEY");
     }
 
     /// <summary>
-    /// Factory that gives you a Supabase client, already authenticated with the current user's JWT.
+    /// Factory that gives you a Supabase client. Internally uses service role only (not user auth).
     /// </summary>
     public interface ISupabaseClientFactory
     {
         /// <summary>
-        /// Creates and initializes a new <see cref="Client"/> instance scoped to the current HTTP request.
+        /// Returns a singleton instance of a Supabase client.
         /// </summary>
-        /// <returns>An initialized and authenticated <see cref="Client"/>.</returns>
         Task<Client> CreateAsync();
     }
 
-    /// <inheritdoc/>
     public class SupabaseClientFactory : ISupabaseClientFactory
     {
         private readonly SupabaseSettings _settings;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="SupabaseClientFactory"/>.
-        /// </summary>
-        /// <param name="settings">Injected Supabase settings from configuration.</param>
-        /// <param name="httpContextAccessor">Accessor to get the current HTTP context and its headers.</param>
+        // Lazily created Supabase client
+        private Client? _client;
+        private bool _initialized;
+        private readonly SemaphoreSlim _initLock = new(1, 1); // Used to avoid race conditions
+
         public SupabaseClientFactory(
             IOptions<SupabaseSettings> settings,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor _ // no longer needed but preserved for DI compatibility
+        )
         {
             _settings = settings.Value;
-            _httpContextAccessor = httpContextAccessor;
         }
 
-        /// <inheritdoc/>
         public async Task<Client> CreateAsync()
         {
-            // 1) Validate config
-            if (string.IsNullOrWhiteSpace(_settings.Url) ||
-                string.IsNullOrWhiteSpace(_settings.Key))
+            // Fast path: return client if already initialized
+            if (_initialized && _client != null)
+                return _client;
+
+            await _initLock.WaitAsync();
+            try
             {
-                throw new InvalidOperationException("Supabase URL or Key is not configured.");
+                if (_initialized && _client != null)
+                    return _client; // another thread may have initialized while we waited
+
+                if (string.IsNullOrWhiteSpace(_settings.Url) ||
+                    string.IsNullOrWhiteSpace(_settings.Key))
+                {
+                    throw new InvalidOperationException("Supabase URL or Key is not configured.");
+                }
+
+                var options = new SupabaseOptions
+                {
+                    AutoConnectRealtime = false
+                };
+
+                _client = new Client(_settings.Url, _settings.Key, options);
+                await _client.InitializeAsync();
+
+                _initialized = true;
+
+                return _client;
             }
-
-            // 2) Spin up a fresh client
-            var options = new SupabaseOptions { AutoConnectRealtime = false };
-            var client = new Client(_settings.Url, _settings.Key, options);
-
-            // 3) Initialize connection (async)
-            await client.InitializeAsync();
-
-            // 4) Authenticate from the incoming JWT
-            var authHeader = _httpContextAccessor.HttpContext?
-                .Request.Headers["Authorization"]
-                .ToString();
-            var refreshHeader = _httpContextAccessor.HttpContext?
-                .Request.Headers["x-refresh-token"]
-                .ToString();
-            var token = authHeader?.Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase);
-
-
-            return client;
+            finally
+            {
+                _initLock.Release();
+            }
         }
     }
 }

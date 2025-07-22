@@ -109,7 +109,7 @@ export async function joinLeague(inviteCode: string, token: string) {
   );
 
   if (!res.ok) {
-    return new Error(await res.text());
+    throw new Error(await res.text());
   }
 
   return res.json();

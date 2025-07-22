@@ -36,9 +36,11 @@ export default function TeamBox({
 
   return (
     <div
-      className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 text-white transition-all ${bgColor} ${borderColor}`}
+      className={`flex flex-col items-center justify-center rounded-lg border-2 p-2 sm:p-3 text-white transition-all ${bgColor} ${borderColor}`}
     >
-      <span className="text-md font-bold">{teamName}</span>
+      <span className="text-center text-sm font-semibold sm:text-base">
+        {teamName}
+      </span>
       <Image
         src={getTeamLogoPath(teamName)}
         alt={teamName}
@@ -46,8 +48,11 @@ export default function TeamBox({
         height={40}
         className="my-2"
       />
+      {teamScore !== null && (
+        <span className="text-lg font-bold">{teamScore}</span>
+      )}
       {isGuess && (
-        <span className="mt-1 text-xl font-medium text-yellow-300">
+        <span className="mt-1 text-sm font-medium text-yellow-300 sm:text-base">
           {isCorrect === true
             ? "✅ Your Pick (Correct)"
             : isCorrect === false

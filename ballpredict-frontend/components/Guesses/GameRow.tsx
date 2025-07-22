@@ -82,8 +82,8 @@ export default function GameRow({
 
   const getButtonStyles = (isPicked: boolean) => {
     return [
-      "flex flex-col transition-all",
-      isPicked ? "bg-green-500" : "bg-gray-500",
+      "flex flex-col flex-1 items-center p-2 transition-all rounded-md",
+      isPicked ? "bg-green-500" : "bg-gray-600",
       isStarted
         ? "cursor-not-allowed opacity-60"
         : "hover:shadow-md cursor-pointer",
@@ -99,35 +99,33 @@ export default function GameRow({
   const getScoreBlock = () => {
     if (!game.isFinished) {
       return (
-        <div className="w-full py-2 text-center text-sm text-gray-300 ">
+        <div className="w-full py-2 text-center text-sm text-gray-300">
           {getStatusDisplay()}
         </div>
       );
     }
 
     return (
-      <div className="flex items-center justify-center gap-4 px-4 py-2  text-sm text-white">
-        <div className="min-w-[40px] text-center">{game.awayTeamScore}</div>
-        <div className="w-1/3 text-center font-medium">
+      <div className="flex items-center justify-center gap-4 px-4 py-2 text-white">
+        <div className="w-1/3 text-center text-sm font-medium">
           {getStatusDisplay()}
         </div>
-        <div className="min-w-[40px] text-center">{game.homeTeamScore}</div>
       </div>
     );
   };
 
-  const containerBg = isStarted ? "bg-gray-700" : "bg-gray-900";
+  const containerBg = isStarted ? "bg-gray-700" : "bg-gray-800";
 
   return (
-    <div
-      className={`mb-4 rounded-lg border border-white ${containerBg} text-white shadow-md`}
-    >
-      <div className="flex flex-row items-center justify-between p-1  border-white md:bg-amber-50">
+    <div className={`mb-4 rounded-md ${containerBg} text-white shadow`}>
+      <div className="flex items-stretch gap-2 p-2">
         {/* Away Team */}
         <button
           disabled={isStarted}
           onClick={() => handleClick(1)}
           className={getButtonStyles(awayIsPicked)}
+          aria-pressed={awayIsPicked}
+          aria-label={`Pick ${game.awayTeam}`}
         >
           <TeamBox
             teamName={game.awayTeam}
@@ -147,6 +145,8 @@ export default function GameRow({
           disabled={isStarted}
           onClick={() => handleClick(2)}
           className={getButtonStyles(homeIsPicked)}
+          aria-pressed={homeIsPicked}
+          aria-label={`Pick ${game.homeTeam}`}
         >
           <TeamBox
             teamName={game.homeTeam}

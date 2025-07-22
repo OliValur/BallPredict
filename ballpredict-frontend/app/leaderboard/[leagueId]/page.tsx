@@ -38,7 +38,8 @@ export default async function LeagueLeaderboard({
       <ul>
         {scores.map((team) => (
           <li key={team.id}>
-            {team.team}: {team.points.totalPoints} points
+            {team.team}: {team.points.totalPoints} points and week 1 points is{" "}
+            {team.points.weeks["1"] || 0}
           </li>
         ))}
       </ul>

@@ -2,6 +2,9 @@
 using BallPredict.Backend.Services;
 using BallPredict.Backend.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 
 namespace BallPredict.Backend.Controllers
 {
@@ -27,11 +30,14 @@ namespace BallPredict.Backend.Controllers
         {
             public string Id { get; set; }
             public string Username { get; set; }
+            public Points Points { get; set; } = new Points();
         }
 
         [HttpPost]
         public async Task<IActionResult> HandleWebhook([FromBody] ClerkUserCreatedPayload payload)
         {
+            Console.WriteLine("Received Clerk webhook event: " + payload.Type + ", Data er: " + JsonSerializer.Serialize(payload.Data));
+
             if (payload.Type != "user.created")
                 return Ok("Ignored non-user.created event");
 
@@ -41,7 +47,8 @@ namespace BallPredict.Backend.Controllers
             var team = new Teams
             {
                 Id = payload.Data.Id,
-                Team = payload.Data.Username ?? "Unnamed"
+                Team = payload.Data.Username ?? "Unnamed",
+                Points = payload.Data.Points ?? new Points()
             };
 
             var result = await _teamService.AddTeam(team);
