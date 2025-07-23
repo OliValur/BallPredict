@@ -1,6 +1,7 @@
 ﻿
 using BallPredict.Backend.Models;
 using Microsoft.Extensions.Caching.Memory;
+using BallPredict.Backend.DTOs;
 
 //using Postgrest.Constants;
 using Supabase;
@@ -13,12 +14,14 @@ namespace BallPredict.Backend.Services
     {
         private readonly Client _supabaseClient;
         private readonly IMemoryCache _memoryCache;
+        private readonly GuessService _guessService;
 
 
         public LeagueService(ISupabaseClientFactory supabaseFactory, IMemoryCache memoryCache)
         {
             _supabaseClient = supabaseFactory.CreateAsync().GetAwaiter().GetResult();
             _memoryCache = memoryCache;
+            _guessService = new GuessService(supabaseFactory, memoryCache);
         }
         public async Task<Leagues> CreateLeague(Leagues league)
         {
@@ -51,14 +54,6 @@ namespace BallPredict.Backend.Services
 
             return response.Models.FirstOrDefault();
         }
-        /*
-        public async Task<Boolean> AddGuessAsync(Guess guess)
-        {
-            var client = await _supabaseFactory.CreateAsync();
-            var result = await client.From<Guess>().Insert(guess);
-            return true;
-        }
-        */
         public async Task<Boolean> JoinLeague(LeagueMembers leagueMembers)
         {
             var result = await _supabaseClient.From<LeagueMembers>().Insert(leagueMembers);
@@ -79,7 +74,7 @@ namespace BallPredict.Backend.Services
             //fetch all league id's associated with the user and then fetch the league info and return the list of leagues
             var response = await _supabaseClient
                 .From<LeagueMembers>()
-                .Where(l => l.PlayerId == userId)
+                .Filter(userId, Operator.In, "PlayerId")
                 .Get();
             var leagueIds = response.Models.Select(l => l.LeagueId).ToList();
             if (leagueIds.Count == 0)
@@ -98,31 +93,65 @@ namespace BallPredict.Backend.Services
             return leaguesResponse.Models.ToList();
         }
 
-        public async Task<List<Teams>> GetLeagueById(Guid leagueId)
+        public async Task<List<TeamsDto>> GetLeagueById(Guid leagueId)
         {
+            if (_memoryCache.TryGetValue($"leagueTeams_{leagueId}", out List<TeamsDto> cachedTeams))
+            {
+                return cachedTeams;
+            }
 
-            if (_memoryCache.TryGetValue($"leagueTeams_{leagueId}", out List<Teams> cachedTeams))
-               { return cachedTeams; }
+            // Step 1: Get player IDs from LeagueMembers
+            var leagueMembers = await _supabaseClient
+                .From<LeagueMembers>()
+                .Where(l => l.LeagueId == leagueId)
+                .Get();
 
-                var response = await _supabaseClient
-                    .From<LeagueMembers>()
-                    .Where(l => l.LeagueId == leagueId)
-                    .Get();
-                if (response.Models.Count == 0)
-                {
-                    return null;
-                }
-                var playerIds = response.Models.Select(m => m.PlayerId).ToList();
-                var leagueResponse = await _supabaseClient
-                    .From<Teams>()
-                    .Filter(t => t.Id, Operator.In, playerIds)
-                    .Get();
-            _memoryCache.Set($"leagueTeams_{leagueId}", leagueResponse.Models.ToList(), new MemoryCacheEntryOptions
+            if (leagueMembers.Models.Count == 0)
+            {
+                return null;
+            }
+
+            var playerIds = leagueMembers.Models.Select(m => m.PlayerId).ToList();
+
+            // Step 2: Get teams by player IDs
+            var teamResponse = await _supabaseClient
+                .From<Teams>()
+                .Filter(t => t.Id, Operator.In, playerIds)
+                .Get();
+
+            var teams = teamResponse.Models;
+
+            // Step 3: Get guesses by those users
+            var guesses = await _guessService.GetGuessesByUserIds(playerIds, leagueId);
+
+            // Step 4: Group guesses by userId
+            var guessesByUserId = guesses
+                .GroupBy(g => g.userId)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            // Step 5: Build TeamsDto list
+            var teamsWithGuesses = teams.Select(team => new TeamsDto
+            {
+                Team = team,
+                Guesses = guessesByUserId.TryGetValue(team.Id, out var userGuesses)
+                    ? userGuesses.Select(g => new GuessDto
+                    {
+                        UserId = g.userId,
+                        GameId = g.gameId,
+                        Prediction = g.guess,
+                        // Add any other fields if needed
+                    }).ToList()
+                    : new List<GuessDto>()
+            }).ToList();
+
+            // Step 6: Cache and return
+            _memoryCache.Set($"leagueTeams_{leagueId}", teamsWithGuesses, new MemoryCacheEntryOptions
             {
                 SlidingExpiration = TimeSpan.FromMinutes(5)
             });
-            return leagueResponse.Models.ToList();
 
+            return teamsWithGuesses;
         }
+
     }
 } 

@@ -1,7 +1,12 @@
-﻿namespace BallPredict.Backend.DTOs
+﻿using BallPredict.Backend.Models;
+
+namespace BallPredict.Backend.DTOs
 {
     public class TeamsDto
     {
-        public string Team { get; set; }
+        public Teams Team { get; set; }
+        public List<GuessDto> Guesses { get; set; } 
+
+
     }
 }

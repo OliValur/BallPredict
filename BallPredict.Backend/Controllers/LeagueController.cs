@@ -34,7 +34,7 @@ namespace BallPredict.Backend.Controllers
         
         // GET api/<LeagueController>/5
         [HttpGet("{id}")]
-        public async Task<List<Teams>> Get(Guid id)
+        public async Task<List<TeamsDto>> Get(Guid id)
         {
             var teams = await _leagueService.GetLeagueById(id);
             return teams;

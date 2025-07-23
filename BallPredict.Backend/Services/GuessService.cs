@@ -1,5 +1,6 @@
 ﻿using BallPredict.Backend.Models;
 using Microsoft.Extensions.Caching.Memory;
+using static Supabase.Postgrest.Constants;
 
 
 //using Postgrest.Constants;
@@ -18,6 +19,35 @@ namespace BallPredict.Backend.Services
             _supabaseClient = supabaseFactory.CreateAsync().GetAwaiter().GetResult();
             _memoryCache = memoryCache;
         }
+
+        /// <summary>
+        /// Gets all guesses for a specific league.
+        /// </summary>
+        /// <param name="userIds">A string list of the user ids in the league</param>
+        /// <param name="leagueId">The Guid of the league</param>
+        /// <returns>TBD</returns>
+        public async Task<List<Guess>> GetGuessesByUserIds(List<string> userIds, Guid leagueId)
+        {
+            // Check if the guesses are in the cache
+            if (_memoryCache.TryGetValue($"guesses_{leagueId}", out List<Guess> cachedGuesses))
+            {
+                return cachedGuesses.Where(g => userIds.Contains(g.userId)).ToList();
+            }
+            Console.WriteLine("Hér" + userIds + leagueId);
+            var guesses = await _supabaseClient
+                .From<Guess>()
+                .Select("*")
+                .Filter(x => x.userId, Operator.In, userIds)
+                .Get();
+            // Cache the guesses for 60 minutes
+            _memoryCache.Set($"guesses_{leagueId}", guesses.Models.ToList(), new MemoryCacheEntryOptions
+            {
+                SlidingExpiration = TimeSpan.FromMinutes(5)
+            });
+            Console.WriteLine(guesses);
+            return guesses.Models.ToList();
+        }
+
         public async Task<List<Games>> GetUserGuessesAsync(string userId, int week)
         {
             // Check if the games are in the cache
