@@ -10,6 +10,15 @@ type Team = {
   };
 };
 
+type guesses = {
+  guesses: {
+    userId: string;
+    prediction: number;
+  }[];
+};
+
+type TeamWithGuesses = Team & guesses;
+
 export default async function LeagueLeaderboard({
   params,
 }: {
@@ -29,7 +38,7 @@ export default async function LeagueLeaderboard({
   }
   console.log("League slug:", leagueId);
   console.log("token:", token);
-  const scores: Team[] = await getLeagueScores(leagueId, token);
+  const scores: TeamWithGuesses[] = await getLeagueScores(leagueId, token);
   console.log("League scores data:", scores);
 
   return (
@@ -38,8 +47,11 @@ export default async function LeagueLeaderboard({
       <ul>
         {scores.map((team) => (
           <li key={team.id}>
-            {team.team}: {team.points.totalPoints} points and week 1 points is{" "}
-            {team.points.weeks["1"] || 0}
+            {" "}
+            {team.team.team} Giskið er:{" "}
+            {team.guesses[0]?.prediction
+              ? team.guesses[0].prediction
+              : "Engin spá"}{" "}
           </li>
         ))}
       </ul>

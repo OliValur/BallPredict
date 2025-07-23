@@ -1,30 +1,3 @@
-/*
-import { useQuery } from "@tanstack/react-query";
-import { getUserLeagues } from "@/services/api";
-import { getAuth, clerkClient } from "@clerk/nextjs/server";
-import type { NextApiRequest, NextApiResponse } from "next";
-
-export default function LeaderboardPage() {
- 
-  const { data, isSuccess } = useQuery({
-    queryKey: ["userLeagues"],
-    queryFn: () => getUserLeagues(),
-  });
-
-  if (!isSuccess) {
-    return <div>Error loading user leagues</div>;
-  }
-
-
-  return (
-    <div>
-      <h1>Leaderboard</h1>
-      <p>Leaderboard page content goes here.</p>
-    </div>
-  );
-}
-*/
-// app/leaderboard/[leagueId]/page.tsx
 import { auth } from "@clerk/nextjs/server";
 import { getUserLeagues } from "@/services/api";
 import Link from "next/link";

@@ -74,7 +74,7 @@ namespace BallPredict.Backend.Services
             //fetch all league id's associated with the user and then fetch the league info and return the list of leagues
             var response = await _supabaseClient
                 .From<LeagueMembers>()
-                .Filter(userId, Operator.In, "PlayerId")
+                .Where(l => l.PlayerId == userId)
                 .Get();
             var leagueIds = response.Models.Select(l => l.LeagueId).ToList();
             if (leagueIds.Count == 0)

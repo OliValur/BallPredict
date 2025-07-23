@@ -13,7 +13,9 @@ export async function getGamesAndUserGuesses(week: number, token: string) {
   if (!res.ok) {
     throw new Error(await res.text());
   }
-  return res.json();
+  const data = await res.json();
+  console.log("Fetched games and user guesses:", data);
+  return data;
 }
 
 export async function createTeam(teamName: string, token: string) {
