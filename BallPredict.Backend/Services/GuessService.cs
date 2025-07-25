@@ -94,5 +94,23 @@ namespace BallPredict.Backend.Services
 
             return true;
         }
+
+        public async Task<List<Games>> GetAllGames()
+        {
+            // Check if the games are in the cache
+            if (!_memoryCache.TryGetValue("all_games", out List<Games> cachedGames))
+            {
+                // If not, fetch from the database
+                var games = await _supabaseClient
+                    .From<Games>()
+                    .Select("*")
+                    .Get();
+                cachedGames = games.Models.ToList();
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(3));
+                _memoryCache.Set("all_games", cachedGames, cacheOptions);
+            }
+            return cachedGames;
+        }
     }
 }

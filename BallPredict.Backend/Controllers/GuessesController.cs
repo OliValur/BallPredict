@@ -30,6 +30,16 @@ namespace BallPredict.Backend
             return Ok(guesses);
         }
 
+        //Get api/<GuessesController>
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var userId = GetUserId();
+            var guesses = await _guessService.GetAllGames();
+            return Ok(guesses);
+        }
+
         // GET: api/<GuessesController>/league/{leagueId}
         /*
         [Authorize]
@@ -45,7 +55,7 @@ namespace BallPredict.Backend
         }
         */
         // POST api/<GuessesController>
-        
+
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] GuessDto guessDto)
