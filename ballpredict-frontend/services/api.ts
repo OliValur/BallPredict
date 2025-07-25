@@ -14,7 +14,6 @@ export async function getGamesAndUserGuesses(week: number, token: string) {
     throw new Error(await res.text());
   }
   const data = await res.json();
-  console.log("Fetched games and user guesses:", data);
   return data;
 }
 
@@ -137,8 +136,26 @@ export async function getUserLeagues(token: string) {
 }
 
 export async function getLeagueScores(leagueId: string, token: string) {
-  console.log("Fetching league scores for leagueId:", token);
   const res = await fetch(`http://localhost:5245/api/League/${leagueId}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    next: {
+      revalidate: 600,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+  return res.json();
+}
+
+export async function getAllGames(token: string) {
+  const res = await fetch(`http://localhost:5245/api/guesses`, {
     method: "GET",
     headers: {
       Accept: "application/json",

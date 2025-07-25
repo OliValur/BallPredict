@@ -18,10 +18,8 @@ export default function LeaguesPage() {
       const response = await createLeague(leagueName, token);
       //if response is successful, redirect user to the leaderboard page for that league
       if (response && response.id) {
-        console.log("League created with ID:", response.id);
         router.push(`/leaderboard/${response.id}`);
       }
-      console.log("League created successfully:", response);
     } catch (error) {
       console.error("Error creating league:", error);
     }
@@ -41,7 +39,6 @@ export default function LeaguesPage() {
       const response = await joinLeague(inviteCode, token);
       //if response is successful, redirect user to the leaderboard page for that league
       if (response && response.id) {
-        console.log("Joined league with ID:", response.id);
         router.push("/leaderboard");
       }
     } catch (error) {

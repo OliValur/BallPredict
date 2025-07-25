@@ -5,7 +5,7 @@ import TeamBox from "./TeamBox";
 import { submitGuess, updateGuess } from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@clerk/nextjs";
-
+import Image from "next/image";
 interface GameRowProps {
   game: Game;
   userId: string;
@@ -80,12 +80,27 @@ export default function GameRow({
   const awayIsPicked = currentGuess?.guess === 1;
   const homeIsPicked = currentGuess?.guess === 2;
 
-  const getButtonStyles = (isPicked: boolean) => {
+  const getButtonStyles = (
+    isPicked: boolean,
+    isWinner: boolean,
+    isStarted: boolean
+  ) => {
+    if (isStarted && isWinner) {
+      return "flex flex-col flex-1 items-center p-2 rounded-md bg-green-400 shadow-md";
+    }
+    if (isPicked && !isStarted) {
+      return "flex flex-col flex-1 items-center p-2 rounded-md bg-cyan-400 shadow-md";
+    }
+    if (!isPicked && !isStarted) {
+      return "flex flex-col flex-1 items-center p-2 rounded-md bg-gray-600 hover:bg-gray-700 transition-colors";
+    }
+    // Default styles for unpicked teams
+
     return [
       "flex flex-col flex-1 items-center p-2 transition-all rounded-md",
-      isPicked ? "bg-green-500" : "bg-gray-600",
+      isPicked ? "bg-cyan-400" : "bg-gray-600",
       isStarted
-        ? "cursor-not-allowed opacity-60"
+        ? "cursor-not-allowed opacity-60 "
         : "hover:shadow-md cursor-pointer",
     ].join(" ");
   };
@@ -114,16 +129,20 @@ export default function GameRow({
     );
   };
 
-  const containerBg = isStarted ? "bg-gray-700" : "bg-gray-800";
+  const containerBg = isStarted ? "bg-gray-300" : "bg-gray-900";
 
   return (
     <div className={`mb-4 rounded-md ${containerBg} text-white shadow`}>
-      <div className="flex items-stretch gap-2 p-2">
+      <div className="flex gap-2 p-2">
         {/* Away Team */}
         <button
           disabled={isStarted}
           onClick={() => handleClick(1)}
-          className={getButtonStyles(awayIsPicked)}
+          className={getButtonStyles(
+            awayIsPicked,
+            game.result === 1,
+            isStarted
+          )}
           aria-pressed={awayIsPicked}
           aria-label={`Pick ${game.awayTeam}`}
         >
@@ -139,12 +158,15 @@ export default function GameRow({
             }
           />
         </button>
-
         {/* Home Team */}
         <button
           disabled={isStarted}
           onClick={() => handleClick(2)}
-          className={getButtonStyles(homeIsPicked)}
+          className={getButtonStyles(
+            homeIsPicked,
+            game.result === 2,
+            isStarted
+          )}
           aria-pressed={homeIsPicked}
           aria-label={`Pick ${game.homeTeam}`}
         >

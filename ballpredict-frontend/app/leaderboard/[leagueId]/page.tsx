@@ -1,4 +1,4 @@
-import { getLeagueScores, getGamesAndUserGuesses } from "@/services/api";
+import { getLeagueScores, getAllGames } from "@/services/api";
 import { auth } from "@clerk/nextjs/server";
 import LeaderboardClient from "./LeaderBoardClient";
 
@@ -7,6 +7,12 @@ export default async function LeagueLeaderboard({
 }: {
   params: Promise<{ leagueId: string }>;
 }) {
+  type GameGuessDict = {
+    [gameId: string]: {
+      [userId: string]: number;
+    };
+  };
+
   const { leagueId } = await params;
   const { userId, getToken } = await auth();
 
@@ -15,17 +21,33 @@ export default async function LeagueLeaderboard({
   const token = await getToken({ template: "supabase" });
   if (!token) return <div>Unable to authenticate</div>;
 
-  const scores = await getLeagueScores(leagueId, token);
+  const allTeams = await getLeagueScores(leagueId, token);
   const initialWeek = 1; // default view
-  const gameData = await getGamesAndUserGuesses(initialWeek, token);
+  const allGames = await getAllGames(token);
 
+  const gameGuessMap: GameGuessDict = {};
+  allGames.forEach((game) => {
+    gameGuessMap[game.id] = {};
+  });
+
+  allTeams.forEach((team) => {
+    team.guesses.forEach((guess) => {
+      if (gameGuessMap[guess.gameId]) {
+        gameGuessMap[guess.gameId][team.team.id] = guess.prediction;
+      }
+    });
+  });
+
+  allGames.forEach((game) => {
+    game.guesses = gameGuessMap[game.id] || {};
+  });
   return (
     <LeaderboardClient
       leagueId={leagueId}
       token={token}
-      teams={scores}
+      teams={allTeams}
       initialWeek={initialWeek}
-      initialGames={gameData}
+      allGames={allGames}
     />
   );
 }
