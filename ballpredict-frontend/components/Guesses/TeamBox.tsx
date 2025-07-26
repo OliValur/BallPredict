@@ -4,15 +4,9 @@ import Image from "next/image";
 export default function TeamBox({
   teamName,
   teamScore,
-  isWinner,
-  isGuess,
-  isCorrect,
 }: {
   teamName: string;
   teamScore: number | null;
-  isWinner: boolean | null;
-  isGuess?: boolean;
-  isCorrect?: boolean | null;
 }) {
   return (
     <div className="flex flex-col items-center p-2 rounded-md ">

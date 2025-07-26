@@ -9,7 +9,7 @@ import {
 } from "@clerk/clerk-react";
 import { useQuery } from "@tanstack/react-query";
 import { getGamesAndUserGuesses } from "@/services/api";
-import { Game } from "@/types/game";
+import { Game } from "@/types/allTypes";
 import GameRow from "./GameRow";
 import { useEffect, useState } from "react";
 

@@ -1,78 +1,86 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getLeagueScores } from "@/services/api";
-
-type Game = {
-  id: string;
-  homeTeam: string;
-  awayTeam: string;
-  startTime: string;
-  isFinished: boolean;
-  result: number | null;
-  guesses: {
-    userId: string;
-    guess: number;
-  }[];
-};
-
-type Team = {
-  id: string;
-  team: string;
-  points: {
-    weeks: Record<string, number>;
-    totalPoints: number;
-  };
-};
-
-type TeamWithGuesses = {
-  team: Team;
-  guesses: {
-    userId: string;
-    prediction: number;
-  }[];
-};
+import { useState } from "react";
+import { Game, TeamWithGuesses } from "@/types/allTypes";
+import Standing from "../components/Standings";
+import GameGuesses from "../components/Guesses";
+import SeasonGuesses from "../components/SeasonGuesses";
 
 export default function LeaderboardClient({
-  leagueId,
-  token,
   teams,
   initialWeek,
   allGames,
 }: {
-  leagueId: string;
-  token: string;
   teams: TeamWithGuesses[];
   initialWeek: number;
   allGames: Game[];
 }) {
   const [week, setWeek] = useState(initialWeek);
+  const [selection, setSelection] = useState<
+    "standings" | "guesses" | "seasonGuesses"
+  >("standings");
+  const weeksGames = allGames.filter((game) => game.week === week);
 
   const sortedTeams = [...teams].sort(
     (a, b) => b.team.points.totalPoints - a.team.points.totalPoints
   );
-  console.log("sortedTeams", sortedTeams);
+
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">League Leaderboard</h2>
-      <div className="mb-4">
-        <label>Week: </label>
-        <select value={week} onChange={(e) => setWeek(Number(e.target.value))}>
-          {[...Array(22)].map((_, i) => (
-            <option key={i} value={i + 1}>
-              Week {i + 1}
-            </option>
-          ))}
-        </select>
+    <div className="p-4 space-y-4">
+      {/* View Selector */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setSelection("standings")}
+          className={`px-4 py-2 rounded-md ${
+            selection === "standings" ? "bg-blue-600 text-white" : "bg-gray-200"
+          }`}
+        >
+          Standings
+        </button>
+        <button
+          onClick={() => setSelection("guesses")}
+          className={`px-4 py-2 rounded-md ${
+            selection === "guesses" ? "bg-blue-600 text-white" : "bg-gray-200"
+          }`}
+        >
+          Weekly Guesses
+        </button>
+        <button
+          onClick={() => setSelection("seasonGuesses")}
+          className={`px-4 py-2 rounded-md ${
+            selection === "seasonGuesses"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200"
+          }`}
+        >
+          Season Guesses
+        </button>
       </div>
-      <div>
-        {sortedTeams.map((currentTeam) => (
-          <div key={currentTeam.team.id} className="mb-4">
-            <h3 className="text-lg font-semibold">{currentTeam.team.team}</h3>
-            <p>Total Points: {currentTeam.team.points.totalPoints}</p>
-          </div>
-        ))}
-      </div>
+
+      {/* Week Selector */}
+      {selection === "guesses" && (
+        <div>
+          <label className="mr-2 font-medium">Week:</label>
+          <select
+            value={week}
+            onChange={(e) => setWeek(Number(e.target.value))}
+            className="border px-2 py-1 rounded-md"
+          >
+            {Array.from({ length: 22 }, (_, i) => i + 1).map((w) => (
+              <option key={w} value={w}>
+                Week {w}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {/* Render selected view */}
+      {selection === "standings" && <Standing teams={sortedTeams} />}
+      {selection === "guesses" && (
+        <GameGuesses sortedTeams={sortedTeams} weeksGames={weeksGames} />
+      )}
+      {selection === "seasonGuesses" && <SeasonGuesses name="Season Guesses" />}
     </div>
   );
 }

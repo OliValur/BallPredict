@@ -29,6 +29,9 @@ namespace BallPredict.Backend.Services
             {
                 var result = await _supabaseClient.From<Teams>()
                     .Insert(team);
+                var seasonGuess = new SeasonGuesses { UserId = team.Id };
+                var seasonPrediction = await _supabaseClient.From<SeasonGuesses>()
+                    .Insert(seasonGuess);
                 var createdTeam = result.Models.FirstOrDefault();
                 return createdTeam;
             }

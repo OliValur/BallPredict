@@ -172,3 +172,40 @@ export async function getAllGames(token: string) {
   }
   return res.json();
 }
+
+export async function submitSeasonPredictions(
+  category: string,
+  guess: string,
+  token: string
+) {
+  const payload = {
+    category,
+    guess,
+  };
+
+  console.log("Submitting season prediction:", payload);
+
+  const res = await fetch("http://localhost:5245/api/SeasonPrediction", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function getSeasonPredictions(token: string) {
+  const res = await fetch("http://localhost:5245/api/SeasonPrediction", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}

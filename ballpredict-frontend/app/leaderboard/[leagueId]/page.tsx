@@ -1,6 +1,7 @@
 import { getLeagueScores, getAllGames } from "@/services/api";
 import { auth } from "@clerk/nextjs/server";
 import LeaderboardClient from "./LeaderBoardClient";
+import { TeamWithGuesses, Game } from "@/types/allTypes";
 
 export default async function LeagueLeaderboard({
   params,
@@ -26,11 +27,11 @@ export default async function LeagueLeaderboard({
   const allGames = await getAllGames(token);
 
   const gameGuessMap: GameGuessDict = {};
-  allGames.forEach((game) => {
+  allGames.forEach((game: Game) => {
     gameGuessMap[game.id] = {};
   });
 
-  allTeams.forEach((team) => {
+  allTeams.forEach((team: TeamWithGuesses) => {
     team.guesses.forEach((guess) => {
       if (gameGuessMap[guess.gameId]) {
         gameGuessMap[guess.gameId][team.team.id] = guess.prediction;
@@ -43,8 +44,6 @@ export default async function LeagueLeaderboard({
   });
   return (
     <LeaderboardClient
-      leagueId={leagueId}
-      token={token}
       teams={allTeams}
       initialWeek={initialWeek}
       allGames={allGames}

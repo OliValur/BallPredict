@@ -1,11 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { Game } from "@/types/game";
+import { Game } from "@/types/allTypes";
 import TeamBox from "./TeamBox";
 import { submitGuess, updateGuess } from "@/services/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@clerk/nextjs";
-import Image from "next/image";
 interface GameRowProps {
   game: Game;
   userId: string;
@@ -146,17 +144,7 @@ export default function GameRow({
           aria-pressed={awayIsPicked}
           aria-label={`Pick ${game.awayTeam}`}
         >
-          <TeamBox
-            teamName={game.awayTeam}
-            teamScore={game.awayTeamScore}
-            isWinner={game.result === 1}
-            isGuess={currentGuess?.guess === 1}
-            isCorrect={
-              currentGuess?.guess === 1 && game.isFinished
-                ? game.result === 1
-                : null
-            }
-          />
+          <TeamBox teamName={game.awayTeam} teamScore={game.awayTeamScore} />
         </button>
         {/* Home Team */}
         <button
@@ -170,17 +158,7 @@ export default function GameRow({
           aria-pressed={homeIsPicked}
           aria-label={`Pick ${game.homeTeam}`}
         >
-          <TeamBox
-            teamName={game.homeTeam}
-            teamScore={game.homeTeamScore}
-            isWinner={game.result === 2}
-            isGuess={currentGuess?.guess === 2}
-            isCorrect={
-              currentGuess?.guess === 2 && game.isFinished
-                ? game.result === 2
-                : null
-            }
-          />
+          <TeamBox teamName={game.homeTeam} teamScore={game.homeTeamScore} />
         </button>
       </div>
 
