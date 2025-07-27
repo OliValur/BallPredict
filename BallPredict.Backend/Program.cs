@@ -127,7 +127,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins("http://localhost:3000", "http://localhost:3000/api/guess") 
+                .WithOrigins("http://localhost:3000", "http://localhost:3000/api/guess", "https://ball-predict.vercel.app", "https://www.nflguessr.com/") 
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
