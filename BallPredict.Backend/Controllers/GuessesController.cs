@@ -60,6 +60,7 @@ namespace BallPredict.Backend
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] GuessDto guessDto)
         {
+            Console.WriteLine("Hæ");
             var userId = JwtHelper.GetUserIdFromToken(Request.Headers.Authorization);
 
             //Console.WriteLine(userId);
