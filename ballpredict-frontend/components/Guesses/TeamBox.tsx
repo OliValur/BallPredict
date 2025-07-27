@@ -17,12 +17,12 @@ export default function TeamBox({
 
       {/* Team Logo */}
       <div className="relative group">
-        <div className="w-12 h-12 rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-shadow duration-200 bg-white dark:bg-slate-100 p-0.5">
+        <div className="w-16 h-16 rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-shadow duration-200">
           <Image
             src={getTeamLogoPath(teamName)}
             alt={`${teamName} logo`}
-            width={48}
-            height={48}
+            width={64}
+            height={64}
             className="w-full h-full object-contain"
           />
         </div>

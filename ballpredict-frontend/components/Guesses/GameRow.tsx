@@ -84,10 +84,14 @@ export default function GameRow({
     isStarted: boolean
   ) => {
     const baseStyles =
-      "flex flex-col flex-1 items-center p-3 rounded-lg transition-all duration-300 relative overflow-hidden min-h-[120px]";
+      "flex flex-col flex-1 items-center p-3 rounded-lg transition-all duration-300 relative overflow-hidden min-h-[130px]";
 
     if (isStarted && isWinner) {
-      return `${baseStyles} bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-md scale-102 ring-2 ring-emerald-300`;
+      return `${baseStyles} bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-md ring-2 ring-emerald-300`;
+    }
+    if (isStarted && isPicked && !isWinner) {
+      // User picked this team but it lost
+      return `${baseStyles} bg-gradient-to-br from-red-400 to-red-500 text-white shadow-md ring-2 ring-red-300 opacity-80`;
     }
     if (isPicked && !isStarted) {
       return `${baseStyles} bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-md transform hover:scale-102 ring-2 ring-blue-300`;
@@ -95,24 +99,36 @@ export default function GameRow({
     if (!isPicked && !isStarted) {
       return `${baseStyles} bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-md hover:scale-102 cursor-pointer text-slate-900 dark:text-white`;
     }
-    if (isStarted && !isWinner) {
-      return `${baseStyles} bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 cursor-not-allowed opacity-70`;
+    if (isStarted && !isPicked) {
+      // Game started but user didn't pick this team
+      return `${baseStyles} bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 opacity-60`;
     }
 
     return baseStyles;
   };
-
   const getStatusDisplay = () => {
     if (!isStarted) return startDate.toLocaleString("en-US", options);
-    if (!game.isFinished) return "Game in progress";
-    return "Final";
+    if (!game.isFinished) return "🟢 Game in progress";
+    return "🏁 Final";
   };
 
   const getScoreBlock = () => {
     if (!game.isFinished) {
       return (
-        <div className="bg-slate-100 dark:bg-slate-700 rounded-b-xl px-3 py-2 text-center">
-          <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
+        <div
+          className={`${
+            isStarted
+              ? "bg-gradient-to-r from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30"
+              : "bg-slate-100 dark:bg-slate-700"
+          } rounded-b-xl px-3 py-2 text-center`}
+        >
+          <p
+            className={`text-xs font-medium ${
+              isStarted
+                ? "text-orange-700 dark:text-orange-300"
+                : "text-slate-600 dark:text-slate-300"
+            }`}
+          >
             {getStatusDisplay()}
           </p>
         </div>
@@ -150,16 +166,22 @@ export default function GameRow({
             aria-pressed={awayIsPicked}
             aria-label={`Pick ${game.awayTeam}`}
           >
-            {awayIsPicked && !isStarted && (
-              <div className="absolute top-1 right-1">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-              </div>
-            )}
-            {isStarted && game.result === 1 && (
-              <div className="absolute top-1 right-1">
-                <span className="text-sm">🏆</span>
-              </div>
-            )}
+            {/* Visual indicators */}
+            <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
+              {awayIsPicked && !isStarted && (
+                <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+              )}
+              {awayIsPicked && isStarted && (
+                <div className="bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                  ✓
+                </div>
+              )}
+              {isStarted && game.result === 1 && (
+                <div className="bg-yellow-500 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-lg">
+                  <span className="text-sm">👑</span>
+                </div>
+              )}
+            </div>
             <TeamBox teamName={game.awayTeam} teamScore={null} />
           </button>
 
@@ -184,16 +206,22 @@ export default function GameRow({
             aria-pressed={homeIsPicked}
             aria-label={`Pick ${game.homeTeam}`}
           >
-            {homeIsPicked && !isStarted && (
-              <div className="absolute top-1 right-1">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-              </div>
-            )}
-            {isStarted && game.result === 2 && (
-              <div className="absolute top-1 right-1">
-                <span className="text-sm">🏆</span>
-              </div>
-            )}
+            {/* Visual indicators */}
+            <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
+              {homeIsPicked && !isStarted && (
+                <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+              )}
+              {homeIsPicked && isStarted && (
+                <div className="bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                  ✓
+                </div>
+              )}
+              {isStarted && game.result === 2 && (
+                <div className="bg-yellow-500 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-lg">
+                  <span className="text-sm">👑</span>
+                </div>
+              )}
+            </div>
             <TeamBox teamName={game.homeTeam} teamScore={null} />
           </button>
         </div>

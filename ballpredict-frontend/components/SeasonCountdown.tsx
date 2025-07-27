@@ -1,17 +1,18 @@
 "use client";
 
 import Countdown, { CountdownRenderProps } from "react-countdown";
-//TODO: Change the date and timezone to the actual NFL season start date
+
 export default function SeasonCountdown() {
   return (
-    <Countdown
-      date={new Date(2025, 8, 4, 14, 30, 0)}
-      renderer={NFLCountdownRenderer}
-    />
+    <div className="w-full max-w-md mx-auto">
+      <Countdown
+        date={new Date(2025, 8, 4, 14, 30, 0)}
+        renderer={NFLCountdownRenderer}
+      />
+    </div>
   );
 }
 
-//TODO: update renderer, add ts type for props
 const NFLCountdownRenderer = ({
   days,
   hours,
@@ -20,30 +21,76 @@ const NFLCountdownRenderer = ({
   completed,
 }: CountdownRenderProps) => {
   if (completed) {
-    return <span style={{ color: "#0b6623" }}>🏈 Enjoy the season! 🏈</span>;
+    return (
+      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-center py-3 rounded-lg shadow-md">
+        <span className="text-lg font-bold">🏈 Season is Live! 🏈</span>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <div className="bg-nflblue text-white flex flex-row items-center justify-evenly rounded-lg shadow-lg ">
-        ⏱️ Kickoff in:
-        <div className="flex flex-row ml-7">
-          <div>
-            <strong>{days}</strong>
-            <div>DAYS</div>
+    <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow-md overflow-hidden">
+      <div className="px-4 py-3">
+        <div className="flex items-center justify-between gap-3">
+          {/* Kickoff Text */}
+          <div className="flex items-center gap-2">
+            <span className="text-lg">⏱️</span>
+            <span className="font-bold text-sm">NFL Kickoff:</span>
           </div>
-          <div>
-            <strong>{hours}</strong>
-            <div>HRS</div>
+
+          {/* Countdown Boxes */}
+          <div className="flex gap-2">
+            {/* Days */}
+            <div className="text-center">
+              <div className="bg-white/20 backdrop-blur-sm rounded-md px-2 py-1 border border-white/30 min-w-[3rem]">
+                <div className="text-lg font-bold text-white leading-tight">
+                  {days}
+                </div>
+                <div className="text-xs font-medium text-white/90 uppercase">
+                  Days
+                </div>
+              </div>
+            </div>
+
+            {/* Hours */}
+            <div className="text-center">
+              <div className="bg-white/20 backdrop-blur-sm rounded-md px-2 py-1 border border-white/30 min-w-[3rem]">
+                <div className="text-lg font-bold text-white leading-tight">
+                  {hours}
+                </div>
+                <div className="text-xs font-medium text-white/90 uppercase">
+                  Hrs
+                </div>
+              </div>
+            </div>
+
+            {/* Minutes */}
+            <div className="text-center">
+              <div className="bg-white/20 backdrop-blur-sm rounded-md px-2 py-1 border border-white/30 min-w-[3rem]">
+                <div className="text-lg font-bold text-white leading-tight">
+                  {minutes}
+                </div>
+                <div className="text-xs font-medium text-white/90 uppercase">
+                  Min
+                </div>
+              </div>
+            </div>
+
+            {/* Seconds */}
+            <div className="text-center">
+              <div className="bg-white/20 backdrop-blur-sm rounded-md px-2 py-1 border border-white/30 min-w-[3rem]">
+                <div className="text-lg font-bold text-white leading-tight">
+                  {seconds}
+                </div>
+                <div className="text-xs font-medium text-white/90 uppercase">
+                  Sec
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <strong>{minutes}</strong>
-            <div>MIN</div>
-          </div>
-          <div>
-            <strong>{seconds}</strong>
-            <div>SEC</div>
-          </div>
+
+          {/* Football Icon */}
+          <span className="text-lg">🏈</span>
         </div>
       </div>
     </div>
