@@ -47,6 +47,7 @@ export default async function LeagueLeaderboard({
       teams={allTeams}
       initialWeek={initialWeek}
       allGames={allGames}
+      leagueId={leagueId}
     />
   );
 }

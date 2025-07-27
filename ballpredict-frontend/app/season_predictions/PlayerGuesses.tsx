@@ -27,8 +27,7 @@ type PlayerData = {
 type CategoryKey =
   | "mostPassingYards"
   | "mostReceivingYards"
-  | "mostRushingYards";
-
+  | "rushingChampion";
 interface PlayerGuessesProps {
   currentGuesses: Partial<Record<string, string>>;
   submitGuess: (category: string, guess: string) => void;
@@ -44,14 +43,23 @@ export default function PlayerGuesses({
   const [selected, setSelected] = React.useState<Record<CategoryKey, string>>({
     mostPassingYards: currentGuesses.mostPassingYards ?? "",
     mostReceivingYards: currentGuesses.mostReceivingYards ?? "",
-    mostRushingYards: currentGuesses.mostRushingYards ?? "",
+    rushingChampion: currentGuesses.rushingChampion ?? "",
   });
 
   const [open, setOpen] = React.useState<Record<CategoryKey, boolean>>({
     mostPassingYards: false,
     mostReceivingYards: false,
-    mostRushingYards: false,
+    rushingChampion: false,
   });
+
+  // Update selected state when currentGuesses changes
+  React.useEffect(() => {
+    setSelected({
+      mostPassingYards: currentGuesses.mostPassingYards ?? "",
+      mostReceivingYards: currentGuesses.mostReceivingYards ?? "",
+      rushingChampion: currentGuesses.rushingChampion ?? "",
+    });
+  }, [currentGuesses]);
 
   React.useEffect(() => {
     const load = async () => {
@@ -73,71 +81,83 @@ export default function PlayerGuesses({
       key: "mostReceivingYards",
       data: players.WR,
     },
-    { label: "Most Rushing Yards", key: "mostRushingYards", data: players.RB },
+    { label: "Most Rushing Yards", key: "rushingChampion", data: players.RB },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
-      {categories.map(({ label, key, data }) => (
-        <div key={key} className="border p-4 rounded shadow bg-white">
-          <h3 className="text-lg font-semibold mb-3">{label}</h3>
-
-          <Popover
-            open={open[key]}
-            onOpenChange={(val) => setOpen((prev) => ({ ...prev, [key]: val }))}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {categories.map(({ label, key, data }) => {
+        const currentGuess = currentGuesses[key];
+        return (
+          <div
+            key={key}
+            className="bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 p-6 rounded-lg"
           >
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                aria-expanded={open[key]}
-                className="w-full justify-between"
-              >
-                {selected[key] || `Select player...`}
-                <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
-              <Command>
-                <CommandInput placeholder="Search players..." />
-                <CommandList>
-                  <CommandEmpty>No players found.</CommandEmpty>
-                  <CommandGroup>
-                    {data.map((player) => (
-                      <CommandItem
-                        key={player}
-                        value={player}
-                        onSelect={(val) => {
-                          setSelected((prev) => ({ ...prev, [key]: val }));
-                          setOpen((prev) => ({ ...prev, [key]: false }));
-                        }}
-                      >
-                        <CheckIcon
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            selected[key] === player
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
-                        />
-                        {player}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+            <h3 className="text-lg font-semibold mb-4 text-slate-900 dark:text-slate-100">
+              {label}
+            </h3>
 
-          <Button
-            className="mt-4 w-full"
-            disabled={!selected[key]}
-            onClick={() => submitGuess(key, selected[key])}
-          >
-            Submit
-          </Button>
-        </div>
-      ))}
+            <Popover
+              open={open[key]}
+              onOpenChange={(val) =>
+                setOpen((prev) => ({ ...prev, [key]: val }))
+              }
+            >
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open[key]}
+                  className="w-full justify-between bg-white dark:bg-slate-600 border-slate-300 dark:border-slate-500"
+                >
+                  {selected[key] || `Select player...`}
+                  <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0">
+                <Command>
+                  <CommandInput placeholder="Search players..." />
+                  <CommandList>
+                    <CommandEmpty>No players found.</CommandEmpty>
+                    <CommandGroup>
+                      {data.map((player) => (
+                        <CommandItem
+                          key={player}
+                          value={player}
+                          onSelect={(val) => {
+                            setSelected((prev) => ({ ...prev, [key]: val }));
+                            setOpen((prev) => ({ ...prev, [key]: false }));
+                          }}
+                        >
+                          <CheckIcon
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selected[key] === player
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {player}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+
+            <Button
+              className="mt-4 w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+              disabled={!selected[key] || selected[key] === currentGuess}
+              onClick={() => submitGuess(key, selected[key])}
+            >
+              {selected[key] === currentGuess
+                ? "Already Selected"
+                : "Submit Guess"}
+            </Button>
+          </div>
+        );
+      })}
     </div>
   );
 }

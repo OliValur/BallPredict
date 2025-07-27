@@ -13,31 +13,31 @@ interface SeasonGuessesProps {
 }
 
 const categories = [
-  { key: "nfcEast", label: "NFC East Winner", type: "team" },
-  { key: "nfcNorth", label: "NFC North Winner", type: "team" },
-  { key: "nfcSouth", label: "NFC South Winner", type: "team" },
-  { key: "nfcWest", label: "NFC West Winner", type: "team" },
-  { key: "afcEast", label: "AFC East Winner", type: "team" },
-  { key: "afcNorth", label: "AFC North Winner", type: "team" },
-  { key: "afcSouth", label: "AFC South Winner", type: "team" },
-  { key: "afcWest", label: "AFC West Winner", type: "team" },
-  { key: "mostReceivingYards", label: "Most Receiving Yards", type: "player" },
-  { key: "rushingChampion", label: "Most Rushing Yards", type: "player" },
-  { key: "mostPassingYards", label: "Most Passing Yards", type: "player" },
-  { key: "rookieOfTheYear", label: "Rookie of the Year", type: "player" },
-  { key: "seasonMvp", label: "MVP", type: "player" },
-  { key: "superBowlChamp", label: "Super Bowl Winner", type: "team" },
+  { key: "nfc_east_winner", label: "NFC East Winner", type: "team" },
+  { key: "nfc_north_winner", label: "NFC North Winner", type: "team" },
+  { key: "nfc_south_winner", label: "NFC South Winner", type: "team" },
+  { key: "nfc_west_winner", label: "NFC West Winner", type: "team" },
+  { key: "afc_east_winner", label: "AFC East Winner", type: "team" },
+  { key: "afc_north_winner", label: "AFC North Winner", type: "team" },
+  { key: "afc_south_winner", label: "AFC South Winner", type: "team" },
+  { key: "afc_west_winner", label: "AFC West Winner", type: "team" },
+  {
+    key: "most_receiving_yards",
+    label: "Most Receiving Yards",
+    type: "player",
+  },
+  { key: "most_running_yards", label: "Most Running Yards", type: "player" },
+  { key: "most_throwing_yards", label: "Most Throwing Yards", type: "player" },
+  { key: "rookie_of_the_year", label: "Rookie of the Year", type: "player" },
+  { key: "mvp", label: "MVP", type: "player" },
+  { key: "superbowl_winner", label: "Super Bowl Winner", type: "team" },
 ];
 
 export default function SeasonGuesses({ leagueId, teams }: SeasonGuessesProps) {
-  const { getToken, userId } = useAuth();
+  const { getToken } = useAuth();
   const [predictions, setPredictions] = useState<UserSeasonPredictions[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Season start date: Friday, September 5, 2025 at 12:20 AM
-  const seasonStartDate = new Date(2025, 8, 5, 0, 20); // Month is 0-indexed (8 = September)
-  const isSeasonStarted = new Date() >= seasonStartDate;
 
   // Create a mapping from userId to team name
   const userIdToTeamName = teams.reduce((acc, teamWithGuesses) => {
@@ -77,6 +77,44 @@ export default function SeasonGuesses({ leagueId, teams }: SeasonGuessesProps) {
 
   const isTeamGuess = (guess: string): boolean => {
     return guess !== "—" && guess !== null && guess !== "" && guess.length > 0;
+  };
+
+  const getTeamAbbreviation = (teamName: string): string => {
+    const teamMap: { [key: string]: string } = {
+      "Arizona Cardinals": "ARI",
+      "Atlanta Falcons": "ATL",
+      "Baltimore Ravens": "BAL",
+      "Buffalo Bills": "BUF",
+      "Carolina Panthers": "CAR",
+      "Chicago Bears": "CHI",
+      "Cincinnati Bengals": "CIN",
+      "Cleveland Browns": "CLE",
+      "Dallas Cowboys": "DAL",
+      "Denver Broncos": "DEN",
+      "Detroit Lions": "DET",
+      "Green Bay Packers": "GB",
+      "Houston Texans": "HOU",
+      "Indianapolis Colts": "IND",
+      "Jacksonville Jaguars": "JAX",
+      "Kansas City Chiefs": "KC",
+      "Las Vegas Raiders": "LV",
+      "Los Angeles Chargers": "LAC",
+      "Los Angeles Rams": "LAR",
+      "Miami Dolphins": "MIA",
+      "Minnesota Vikings": "MIN",
+      "New England Patriots": "NE",
+      "New Orleans Saints": "NO",
+      "New York Giants": "NYG",
+      "New York Jets": "NYJ",
+      "Philadelphia Eagles": "PHI",
+      "Pittsburgh Steelers": "PIT",
+      "San Francisco 49ers": "SF",
+      "Seattle Seahawks": "SEA",
+      "Tampa Bay Buccaneers": "TB",
+      "Tennessee Titans": "TEN",
+      "Washington Commanders": "WAS",
+    };
+    return teamMap[teamName] || teamName;
   };
 
   const getCellBackgroundColor = (
@@ -130,11 +168,6 @@ export default function SeasonGuesses({ leagueId, teams }: SeasonGuessesProps) {
     );
   }
 
-  // Filter predictions based on season start
-  const displayedPredictions = isSeasonStarted
-    ? predictions
-    : predictions.filter((prediction) => prediction.userId === userId);
-
   if (predictions.length === 0) {
     return (
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
@@ -157,43 +190,12 @@ export default function SeasonGuesses({ leagueId, teams }: SeasonGuessesProps) {
     );
   }
 
-  if (displayedPredictions.length === 0) {
-    return (
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
-        <div className="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-4">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🏈</span>
-            <h2 className="text-xl font-bold text-white">Season Predictions</h2>
-            <span className="text-sm bg-white/20 px-2 py-1 rounded-full text-white">
-              Only your predictions visible until Sep 5, 2025
-            </span>
-          </div>
-        </div>
-        <div className="p-8 text-center">
-          <div className="text-6xl mb-4">🏈</div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
-            Your Season Predictions Not Found
-          </h3>
-          <p className="text-slate-600 dark:text-slate-400">
-            You haven&apos;t made your season predictions yet. Other
-            players&apos; predictions will be visible after September 5, 2025.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
       <div className="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-4">
         <div className="flex items-center gap-3">
           <span className="text-2xl">🏈</span>
           <h2 className="text-xl font-bold text-white">Season Predictions</h2>
-          {!isSeasonStarted && (
-            <span className="text-sm bg-white/20 px-2 py-1 rounded-full text-white">
-              Only your predictions visible until Sep 5, 2025
-            </span>
-          )}
         </div>
       </div>
 
@@ -205,7 +207,7 @@ export default function SeasonGuesses({ leagueId, teams }: SeasonGuessesProps) {
                 <th className="sticky left-0 z-20 bg-slate-200 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 px-4 py-3 text-left font-bold text-slate-900 dark:text-slate-100">
                   Prediction Category
                 </th>
-                {displayedPredictions.map((user) => (
+                {predictions.map((user) => (
                   <th
                     key={user.userId}
                     className="border border-slate-300 dark:border-slate-600 px-3 py-3 text-center font-semibold text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-700 min-w-[140px]"
@@ -224,7 +226,7 @@ export default function SeasonGuesses({ leagueId, teams }: SeasonGuessesProps) {
               </tr>
             </thead>
             <tbody>
-              {categories.map((category) => (
+              {categories.map((category, index) => (
                 <tr key={category.key}>
                   <td className="sticky left-0 z-10 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 px-4 py-3 font-medium text-slate-900 dark:text-slate-100">
                     <div className="flex items-center gap-2">
@@ -236,7 +238,7 @@ export default function SeasonGuesses({ leagueId, teams }: SeasonGuessesProps) {
                       </span>
                     </div>
                   </td>
-                  {displayedPredictions.map((user) => {
+                  {predictions.map((user) => {
                     const guess = getUserPrediction(user.userId, category.key);
                     return (
                       <td
@@ -248,12 +250,15 @@ export default function SeasonGuesses({ leagueId, teams }: SeasonGuessesProps) {
                         {category.type === "team" && isTeamGuess(guess) ? (
                           <div className="flex flex-col items-center gap-1">
                             <Image
-                              src={getTeamLogoPath(guess)}
+                              src={getTeamLogoPath(getTeamAbbreviation(guess))}
                               alt={guess}
-                              width={32}
-                              height={32}
+                              width={24}
+                              height={24}
                               className="rounded"
                             />
+                            <span className="text-xs font-medium text-slate-900 dark:text-slate-100">
+                              {getTeamAbbreviation(guess)}
+                            </span>
                           </div>
                         ) : (
                           <span className="text-sm font-medium text-slate-900 dark:text-slate-100">

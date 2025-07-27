@@ -90,6 +90,28 @@ namespace BallPredict.Backend.Services
                 return false;
             }
         }
+
+
+        public async Task<List<SeasonGuesses>> GetSeasonPredictionsByLeagueAsync(Guid leagueId)
+        {
+            // get all users in the league
+            var memberships = await _supabaseClient
+                .From<LeagueMembers>()
+                .Where(m => m.LeagueId == leagueId)
+                .Get();
+            var userIds = memberships.Models.Select(m => m.PlayerId).ToList();
+            if (userIds.Count == 0)
+            {
+                return new List<SeasonGuesses>(); // No users in the league
+            }
+            // get all season predictions for those users
+            var predictions = await _supabaseClient
+                .From<SeasonGuesses>()
+                .Filter(Guess => Guess.UserId, Operator.In, userIds)
+                .Get();
+
+            return predictions.Models;
+        }
         private static bool UpdateDependingOnParam(string category, string guess, SeasonGuesses model)
         {
             switch (category)
@@ -124,13 +146,13 @@ namespace BallPredict.Backend.Services
                 case "RookieOfTheYear":
                     model.RookieOfTheYear = guess;
                     break;
-                case "RushingLeader":
+                case "mostRushingYards":
                     model.RushingChampion = guess;
                     break;
-                case "ReceivingLeader":
+                case "rushingChampion":
                     model.MostReceivingYards = guess;
                     break;
-                case "PassingLeader":
+                case "mostPassingYards":
                     model.MostPassingYards = guess;
                     break;
                 case "AfcFirstSeed":

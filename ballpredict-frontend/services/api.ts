@@ -211,3 +211,23 @@ export async function getSeasonPredictions(token: string) {
   console.log("Fetched season predictions:", data);
   return data;
 }
+
+export async function getLeagueSeasonPredictions(
+  leagueId: string,
+  token: string
+) {
+  const res = await fetch(
+    `http://localhost:5245/api/SeasonPrediction/league/${leagueId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (!res.ok) throw new Error(await res.text());
+  const data = await res.json();
+  console.log("Fetched league season predictions:", data);
+  return data;
+}

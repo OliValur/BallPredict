@@ -46,5 +46,12 @@ namespace BallPredict.Backend.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("league/{leagueId}")]
+        public async Task<IActionResult> GetLeagueSeasonPredictions([FromRoute] Guid leagueId)
+        {
+            var predictions = await _service.GetSeasonPredictionsByLeagueAsync(leagueId);
+            return Ok(predictions);
+        }
     }
 }
