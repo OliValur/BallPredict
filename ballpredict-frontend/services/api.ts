@@ -1,7 +1,9 @@
 // services/api-client.ts
 
+const API_BASE_URL = "https://ballpredict-1.onrender.com/api";
+
 export async function getGamesAndUserGuesses(week: number, token: string) {
-  const res = await fetch(`http://localhost:5245/api/Guesses/week/${week}`, {
+  const res = await fetch(`${API_BASE_URL}/Guesses/week/${week}`, {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -18,7 +20,7 @@ export async function getGamesAndUserGuesses(week: number, token: string) {
 }
 
 export async function createTeam(teamName: string, token: string) {
-  const res = await fetch(`http://localhost:5245/api/Team`, {
+  const res = await fetch(`${API_BASE_URL}/Team`, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -39,7 +41,7 @@ export async function submitGuess(
   guess: number,
   token: string
 ) {
-  const res = await fetch(`http://localhost:5245/api/Guesses/`, {
+  const res = await fetch(`${API_BASE_URL}/Guesses/`, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -61,7 +63,7 @@ export async function updateGuess(
   guess: number,
   token: string
 ) {
-  const res = await fetch(`http://localhost:5245/api/Guesses/`, {
+  const res = await fetch(`${API_BASE_URL}/Guesses/`, {
     method: "PATCH",
     headers: {
       Accept: "application/json",
@@ -79,7 +81,7 @@ export async function updateGuess(
 }
 
 export async function createLeague(leagueName: string, token: string) {
-  const res = await fetch(`http://localhost:5245/api/League`, {
+  const res = await fetch(`${API_BASE_URL}/League`, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -96,18 +98,15 @@ export async function createLeague(leagueName: string, token: string) {
 }
 
 export async function joinLeague(inviteCode: string, token: string) {
-  const res = await fetch(
-    `http://localhost:5245/api/LeagueMembership/join-by-code`,
-    {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ InviteCode: inviteCode }),
-    }
-  );
+  const res = await fetch(`${API_BASE_URL}/LeagueMembership/join-by-code`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ InviteCode: inviteCode }),
+  });
 
   if (!res.ok) {
     throw new Error(await res.text());
@@ -117,7 +116,7 @@ export async function joinLeague(inviteCode: string, token: string) {
 }
 
 export async function getUserLeagues(token: string) {
-  const res = await fetch(`http://localhost:5245/api/League`, {
+  const res = await fetch(`${API_BASE_URL}/League`, {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -136,7 +135,7 @@ export async function getUserLeagues(token: string) {
 }
 
 export async function getLeagueScores(leagueId: string, token: string) {
-  const res = await fetch(`http://localhost:5245/api/League/${leagueId}`, {
+  const res = await fetch(`${API_BASE_URL}/League/${leagueId}`, {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -155,7 +154,7 @@ export async function getLeagueScores(leagueId: string, token: string) {
 }
 
 export async function getAllGames(token: string) {
-  const res = await fetch(`http://localhost:5245/api/guesses`, {
+  const res = await fetch(`${API_BASE_URL}/guesses`, {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -185,7 +184,7 @@ export async function submitSeasonPredictions(
 
   console.log("Submitting season prediction:", payload);
 
-  const res = await fetch("http://localhost:5245/api/SeasonPrediction", {
+  const res = await fetch(`${API_BASE_URL}/SeasonPrediction`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -199,7 +198,7 @@ export async function submitSeasonPredictions(
 }
 
 export async function getSeasonPredictions(token: string) {
-  const res = await fetch("http://localhost:5245/api/SeasonPrediction", {
+  const res = await fetch(`${API_BASE_URL}/SeasonPrediction`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -217,7 +216,7 @@ export async function getLeagueSeasonPredictions(
   token: string
 ) {
   const res = await fetch(
-    `http://localhost:5245/api/SeasonPrediction/league/${leagueId}`,
+    `${API_BASE_URL}/SeasonPrediction/league/${leagueId}`,
     {
       method: "GET",
       headers: {
