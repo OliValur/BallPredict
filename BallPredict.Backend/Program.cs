@@ -127,7 +127,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins("http://localhost:3000", "https://www.nflguessr.com/", "https://nfl-guesser-git-master-olafur-valur-sigurdssons-projects.vercel.app/") 
+                .WithOrigins("http://localhost:3000", "https://www.nflguessr.com", "https://www.nflguessr.com/", "https://nfl-guesser-git-master-olafur-valur-sigurdssons-projects.vercel.app/") 
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
