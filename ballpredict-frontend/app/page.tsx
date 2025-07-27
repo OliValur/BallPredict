@@ -1,6 +1,6 @@
 import GameGuesses from "@/components/Guesses/GameGuesses";
 import SeasonCountdown from "@/components/SeasonCountdown";
-import { SignedIn, SignedOut, SignIn, useAuth } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignIn } from "@clerk/nextjs";
 
 export default function Home() {
   return (

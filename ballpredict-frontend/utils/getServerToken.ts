@@ -2,7 +2,7 @@
 import { auth } from "@clerk/nextjs/server";
 
 export async function getServerToken(): Promise<string> {
-  const { getToken } = auth();
+  const { getToken } = await auth();
   const token = await getToken({ template: "supabase" });
 
   if (!token) {

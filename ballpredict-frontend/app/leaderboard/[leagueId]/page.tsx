@@ -39,8 +39,12 @@ export default async function LeagueLeaderboard({
     });
   });
 
-  allGames.forEach((game) => {
-    game.guesses = gameGuessMap[game.id] || {};
+  allGames.forEach((game: Game) => {
+    const guessesForGame = gameGuessMap[game.id] || {};
+    game.guesses = Object.entries(guessesForGame).map(([userId, guess]) => ({
+      userId,
+      guess,
+    }));
   });
   return (
     <LeaderboardClient

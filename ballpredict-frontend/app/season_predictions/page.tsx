@@ -13,15 +13,24 @@ export default function SeasonPredictionsTest() {
   useEffect(() => {
     const fetch = async () => {
       const token = await getToken({ template: "supabase" });
+      if (!token) {
+        console.error("Unable to get authentication token");
+        return;
+      }
       const data = await getSeasonPredictions(token);
 
       if (data) setCurrentGuesses(data);
     };
     fetch();
-  }, []);
+  }, [getToken]);
 
   const submitGuess = async (category: string, guess: string) => {
     const token = await getToken({ template: "supabase" });
+    if (!token) {
+      console.error("Unable to get authentication token");
+      alert("Authentication error, please try signing in again");
+      return;
+    }
     const prevGuesses = { ...currentGuesses };
     try {
       setCurrentGuesses((prev) => ({

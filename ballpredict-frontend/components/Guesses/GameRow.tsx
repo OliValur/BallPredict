@@ -34,24 +34,27 @@ export default function GameRow({
     },
     onSuccess: (_, variables) => {
       setCurrentGuess({ guess: variables.guess });
-      queryClient.setQueryData(["gameGuesses", game.week], (oldGames) => {
-        if (!oldGames) return oldGames;
+      queryClient.setQueryData(
+        ["gameGuesses", game.week],
+        (oldGames: Game[] | undefined) => {
+          if (!oldGames || !Array.isArray(oldGames)) return oldGames;
 
-        return oldGames.map((g) => {
-          if (g.id !== variables.gameId) return g;
+          return oldGames.map((g) => {
+            if (g.id !== variables.gameId.toString()) return g;
 
-          const newGuess = { userId, guess: variables.guess };
+            const newGuess = { userId, guess: variables.guess };
 
-          return {
-            ...g,
-            guesses: [
-              // remove old guess by same user
-              ...g.guesses.filter((guess) => guess.userId !== userId),
-              newGuess,
-            ],
-          };
-        });
-      });
+            return {
+              ...g,
+              guesses: [
+                // remove old guess by same user
+                ...g.guesses.filter((guess) => guess.userId !== userId),
+                newGuess,
+              ],
+            };
+          });
+        }
+      );
     },
     onError: (error) => console.error("Error submitting guess:", error),
   });
@@ -69,9 +72,15 @@ export default function GameRow({
   const handleClick = (guessValue: number) => {
     if (isStarted) return;
     if (!currentGuess) {
-      createGuessMutation.mutate({ gameId: game.id, guess: guessValue });
+      createGuessMutation.mutate({
+        gameId: parseInt(game.id),
+        guess: guessValue,
+      });
     } else {
-      updateGuessMutation.mutate({ gameId: game.id, guess: guessValue });
+      updateGuessMutation.mutate({
+        gameId: parseInt(game.id),
+        guess: guessValue,
+      });
     }
   };
 

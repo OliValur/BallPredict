@@ -226,7 +226,7 @@ export default function SeasonGuesses({ leagueId, teams }: SeasonGuessesProps) {
               </tr>
             </thead>
             <tbody>
-              {categories.map((category, index) => (
+              {categories.map((category) => (
                 <tr key={category.key}>
                   <td className="sticky left-0 z-10 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 px-4 py-3 font-medium text-slate-900 dark:text-slate-100">
                     <div className="flex items-center gap-2">

@@ -3,7 +3,6 @@ import { createLeague, joinLeague } from "@/services/api";
 import Form from "next/form";
 import { useAuth } from "@clerk/clerk-react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 
 export default function LeaguesPage() {
   const { getToken } = useAuth();
