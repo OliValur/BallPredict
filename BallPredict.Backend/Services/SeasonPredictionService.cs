@@ -21,16 +21,12 @@ namespace BallPredict.Backend.Services
 
         public async Task<SeasonGuesses> GetUserPrediction(string userId)
         {
-            if (_cache.TryGetValue($"season_guesses_{userId}", out SeasonGuesses cached))
-                return cached;
 
             var result = await _supabaseClient
                 .From<SeasonGuesses>()
                 .Where(g => g.UserId == userId)
                 .Get();
-
             var guess = result.Models.FirstOrDefault();
-            _cache.Set($"season_guesses_{userId}", guess, TimeSpan.FromMinutes(30));
             return guess;
         }
 
@@ -52,7 +48,6 @@ namespace BallPredict.Backend.Services
                     await _supabaseClient.From<SeasonResults>().Insert(results);
                 }
 
-                _cache.Remove("season_results");
                 return true;
             }
             catch (Exception ex)
@@ -64,12 +59,9 @@ namespace BallPredict.Backend.Services
 
         public async Task<SeasonResults> GetSeasonResults()
         {
-            if (_cache.TryGetValue("season_results", out SeasonResults cached))
-                return cached;
-
             var result = await _supabaseClient.From<SeasonResults>().Get();
+            
             var data = result.Models.FirstOrDefault();
-            _cache.Set("season_results", data, TimeSpan.FromHours(1));
             return data;
         }
         public async Task<bool> SubmitSeasonPrediction(string category, string guess, string userId)
@@ -147,7 +139,7 @@ namespace BallPredict.Backend.Services
                 case "NfcFirstSeed":
                     model.NfcFirstSeed = guess;
                     break;
-                case "SuperBowlWinner":
+                case "SuperBowlChamp":
                     model.SuperBowlChamp = guess;
                     break;
                 default:

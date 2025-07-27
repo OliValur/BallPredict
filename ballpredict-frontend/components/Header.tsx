@@ -11,14 +11,25 @@ export default function Header({ children }: HeaderProps) {
       <h1 className="text-xl font-bold">NFL Guessr 🏈</h1>
       <nav>
         <ul className="flex space-x-4">
-          <Link href="/" className="hover:text-gray-300">
+          <Link href="/" className="hover:text-gray-300" prefetch={true}>
             <li>Home</li>
           </Link>
-          <Link href="/leaderboard" className="hover:text-gray-300">
+          <Link
+            href="/leaderboard"
+            className="hover:text-gray-300"
+            prefetch={true}
+          >
             <li>Leaderboard</li>
           </Link>
-          <Link href="/leagues" className="hover:text-gray-300">
+          <Link href="/leagues" className="hover:text-gray-300" prefetch={true}>
             <li>League</li>
+          </Link>
+          <Link
+            href="/season_predictions"
+            className="hover:text-gray-300"
+            prefetch={true}
+          >
+            <li>Season Predictions</li>
           </Link>
         </ul>
       </nav>

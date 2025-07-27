@@ -41,7 +41,6 @@ namespace BallPredict.Backend.Controllers
         {
             var userId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString());
             var result = await _service.GetUserPrediction(userId);
-
             if (result == null)
                 return NotFound();
 

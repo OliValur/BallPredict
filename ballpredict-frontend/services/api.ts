@@ -195,7 +195,7 @@ export async function submitSeasonPredictions(
   });
 
   if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  return res;
 }
 
 export async function getSeasonPredictions(token: string) {
@@ -207,5 +207,7 @@ export async function getSeasonPredictions(token: string) {
     },
   });
   if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  const data = await res.json();
+  console.log("Fetched season predictions:", data);
+  return data;
 }

@@ -2,86 +2,188 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import { getSeasonPredictions, submitSeasonPredictions } from "@/services/api";
-import Image from "next/image";
-import { getTeamLogoPath } from "../../utils/getTeamLogoPath";
+import DivisionPrediction from "./DivisionWinner";
+import PlayerGuesses from "./PlayerGuesses";
 
 export default function SeasonPredictionsTest() {
   const { getToken } = useAuth();
-  const [afcNorth, setAfcNorth] = useState("");
-
+  const [currentGuesses, setCurrentGuesses] = useState<
+    Partial<Record<string, string>>
+  >({});
   useEffect(() => {
     const fetch = async () => {
       const token = await getToken({ template: "supabase" });
       const data = await getSeasonPredictions(token);
-      if (data?.afcNorth) setAfcNorth(data.afcNorth);
+
+      if (data) setCurrentGuesses(data);
     };
     fetch();
-  }, [getToken]);
+  }, []);
 
-  const submitGuess = async (guess: string) => {
+  const submitGuess = async (category: string, guess: string) => {
     const token = await getToken({ template: "supabase" });
+    const prevGuesses = { ...currentGuesses };
     try {
-      await submitSeasonPredictions("AfcNorth", guess, token);
-      alert("Prediction submitted!");
+      setCurrentGuesses((prev) => ({
+        ...prev,
+        [category.charAt(0).toLowerCase() + category.slice(1)]: guess,
+      }));
+      await submitSeasonPredictions(category, guess, token);
+      //set first letter of category to lowercase
     } catch (error) {
+      setCurrentGuesses(prevGuesses);
       console.error("Error submitting:", error);
-      alert("Error submitting prediction");
+      alert(
+        "Error submitting prediction, please let Óli know and try again later"
+      );
     }
   };
-
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-xl font-semibold mb-2">Test Season Prediction</h1>
-      <label className="block mb-1">AFC North</label>
-
-      <button
-        onClick={() => submitGuess("Baltimore Ravens")}
-        className=" text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        <Image
-          src={getTeamLogoPath("Baltimore Ravens")}
-          alt="Baltimore Ravens"
-          width={60}
-          height={60}
-          className="my-2"
+    <div>
+      <div className="grid md:grid-cols-2 grid-cols-1">
+        <DivisionPrediction
+          divisionName="AFC North"
+          divisionDbName="AfcNorth"
+          teams={[
+            "Baltimore Ravens",
+            "Cincinnati Bengals",
+            "Cleveland Browns",
+            "Pittsburgh Steelers",
+          ]}
+          onSubmit={submitGuess}
+          initialGuess={currentGuesses?.afcNorth}
         />
-      </button>
-      <button
-        onClick={() => submitGuess("Cincinnati Bengals")}
-        className=" text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        <Image
-          src={getTeamLogoPath("Cincinnati Bengals")}
-          alt="Cincinnati Bengals"
-          width={60}
-          height={60}
-          className="my-2"
+        <DivisionPrediction
+          divisionName="AFC South"
+          divisionDbName="AfcSouth"
+          teams={[
+            "Houston Texans",
+            "Indianapolis Colts",
+            "Jacksonville Jaguars",
+            "Tennessee Titans",
+          ]}
+          onSubmit={submitGuess}
+          initialGuess={currentGuesses.afcSouth}
         />
-      </button>
-      <button
-        onClick={() => submitGuess("Cleveland Browns")}
-        className=" text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        <Image
-          src={getTeamLogoPath("Cleveland Browns")}
-          alt="Cleveland Browns"
-          width={60}
-          height={60}
-          className="my-2"
+        <DivisionPrediction
+          divisionName="AFC East"
+          divisionDbName="AfcEast"
+          teams={[
+            "Buffalo Bills",
+            "Miami Dolphins",
+            "New England Patriots",
+            "New York Jets",
+          ]}
+          onSubmit={submitGuess}
+          initialGuess={currentGuesses.afcEast}
         />
-      </button>
-      <button
-        onClick={() => submitGuess("Pittsburgh Steelers")}
-        className=" text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        <Image
-          src={getTeamLogoPath("Pittsburgh Steelers")}
-          alt="Pittsburgh Steelers"
-          width={60}
-          height={60}
-          className="my-2"
+        <DivisionPrediction
+          divisionName="AFC West"
+          divisionDbName="AfcWest"
+          teams={[
+            "Denver Broncos",
+            "Kansas City Chiefs",
+            "Las Vegas Raiders",
+            "Los Angeles Chargers",
+          ]}
+          onSubmit={submitGuess}
+          initialGuess={currentGuesses.afcWest}
         />
-      </button>
+        <DivisionPrediction
+          divisionName="NFC North"
+          divisionDbName="NfcNorth"
+          teams={[
+            "Chicago Bears",
+            "Detroit Lions",
+            "Green Bay Packers",
+            "Minnesota Vikings",
+          ]}
+          onSubmit={submitGuess}
+          initialGuess={currentGuesses.nfcNorth}
+        />
+        <DivisionPrediction
+          divisionName="NFC South"
+          divisionDbName="NfcSouth"
+          teams={[
+            "Atlanta Falcons",
+            "Carolina Panthers",
+            "New Orleans Saints",
+            "Tampa Bay Buccaneers",
+          ]}
+          onSubmit={submitGuess}
+          initialGuess={currentGuesses.nfcSouth}
+        />
+        <DivisionPrediction
+          divisionName="NFC East"
+          divisionDbName="NfcEast"
+          teams={[
+            "Dallas Cowboys",
+            "New York Giants",
+            "Philadelphia Eagles",
+            "Washington Commanders",
+          ]}
+          onSubmit={submitGuess}
+          initialGuess={currentGuesses.nfcEast}
+        />
+        <DivisionPrediction
+          divisionName="NFC West"
+          divisionDbName="NfcWest"
+          teams={[
+            "Arizona Cardinals",
+            "Los Angeles Rams",
+            "San Francisco 49ers",
+            "Seattle Seahawks",
+          ]}
+          onSubmit={submitGuess}
+          initialGuess={currentGuesses.nfcWest}
+        />
+        <DivisionPrediction
+          divisionName="Super Bowl Winner"
+          divisionDbName="SuperBowlChamp"
+          teams={[
+            "Baltimore Ravens",
+            "Cincinnati Bengals",
+            "Cleveland Browns",
+            "Pittsburgh Steelers",
+            "Houston Texans",
+            "Indianapolis Colts",
+            "Jacksonville Jaguars",
+            "Tennessee Titans",
+            "Buffalo Bills",
+            "Miami Dolphins",
+            "New England Patriots",
+            "New York Jets",
+            "Denver Broncos",
+            "Kansas City Chiefs",
+            "Las Vegas Raiders",
+            "Los Angeles Chargers",
+            "Chicago Bears",
+            "Detroit Lions",
+            "Green Bay Packers",
+            "Minnesota Vikings",
+            "Atlanta Falcons",
+            "Carolina Panthers",
+            "New Orleans Saints",
+            "Tampa Bay Buccaneers",
+            "Dallas Cowboys",
+            "New York Giants",
+            "Philadelphia Eagles",
+            "Washington Commanders",
+            "Arizona Cardinals",
+            "Los Angeles Rams",
+            "San Francisco 49ers",
+            "Seattle Seahawks",
+          ]}
+          onSubmit={submitGuess}
+          initialGuess={currentGuesses.superBowlWinner}
+        />
+      </div>
+      <div>
+        <PlayerGuesses
+          currentGuesses={currentGuesses}
+          submitGuess={submitGuess}
+        />
+      </div>
     </div>
   );
 }
