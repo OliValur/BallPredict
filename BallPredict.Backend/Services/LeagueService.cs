@@ -137,6 +137,7 @@ namespace BallPredict.Backend.Services
                 .GroupBy(g => g.userId)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
+
             // Step 5: Build TeamsDto list
             var teamsWithGuesses = teams.Select(team => new TeamsDto
             {

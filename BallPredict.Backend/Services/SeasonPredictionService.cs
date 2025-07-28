@@ -149,7 +149,7 @@ namespace BallPredict.Backend.Services
                 case "mostRushingYards":
                     model.RushingChampion = guess;
                     break;
-                case "rushingChampion":
+                case "mostRecievingYards":
                     model.MostReceivingYards = guess;
                     break;
                 case "mostPassingYards":
