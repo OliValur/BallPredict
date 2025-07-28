@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 Env.Load();
 var supabaseKey = Environment.GetEnvironmentVariable("SUPABASE_SECRET_KEY");
-
+var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
 // Add services to the container.
 
 
@@ -71,14 +71,14 @@ builder.Services.AddAuthentication(x =>
     })
     .AddJwtBearer(x =>
     {
-        x.Authority = config["JwtSettings:Issuer"]; //  Needed to fetch JWKS
+        x.Authority = jwtIssuer; //  Needed to fetch JWKS
 
         x.TokenValidationParameters = new TokenValidationParameters
         {
 
 
             ValidateIssuer = true,
-            ValidIssuer = config["JwtSettings:Issuer"],
+            ValidIssuer = jwtIssuer,
 
             ValidateAudience = true,
             ValidAudience = config["JwtSettings:Audience"],
@@ -87,32 +87,6 @@ builder.Services.AddAuthentication(x =>
             ValidateIssuerSigningKey = true
 
         };
-        /*
-        x.Events = new JwtBearerEvents
-        {
-            OnTokenValidated = context =>
-            {
-                var aud = context.Principal?.FindFirst("aud")?.Value;
-                Console.WriteLine($" Token audience: {aud}");
-                return Task.CompletedTask;
-            },
-            OnMessageReceived = context =>
-            {
-                var token = context.Request.Headers["Authorization"].ToString();
-                Console.WriteLine($" Incoming JWT: {token}");
-                var aud = context.Principal?.FindFirst("aud")?.Value;
-                Console.WriteLine($" Token audience: {aud}");
-                return Task.CompletedTask;
-               
-            },
-            OnAuthenticationFailed = context =>
-            {
-            Console.WriteLine($" JWT auth failed: {context.Exception.Message}");
-            return Task.CompletedTask;
-        }
-        
-        };
-        */
     });
 
 

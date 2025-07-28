@@ -14,5 +14,7 @@ namespace BallPredict.Backend.Models
 
         [Column("owner")]
         public string OwnerId { get; set; }
+        [Column("invite_code")]
+        public string InviteCode { get; set; }
     }
 }
