@@ -10,21 +10,26 @@ namespace BallPredict.Backend.Models
     public class Points
     {
         [JsonPropertyName("weeks")]
-        public Dictionary<string, int> Weeks { get; set; }
+        public Dictionary<string, int> weeks { get; set; }
 
         [JsonPropertyName("totalPoints")]
-        public int TotalPoints { get; set; }
+        public int totalPoints { get; set; }
 
         public Points()
         {
-            Weeks = Enumerable.Range(1, 22)
+            weeks = Enumerable.Range(1, 22)
                 .ToDictionary(week => week.ToString(), _ => 0);
-            TotalPoints = 0;
+            totalPoints = 0;
         }
 
         public override string ToString()
         {
-            return JsonSerializer.Serialize(this);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            return JsonSerializer.Serialize(this, options);
         }
     }
 
@@ -39,6 +44,6 @@ namespace BallPredict.Backend.Models
         public string Team { get; set; }
 
         [Column("points")]
-        public Points Points { get; set; } = new Points();
+        public Points Points { get; set; } 
     }
 }

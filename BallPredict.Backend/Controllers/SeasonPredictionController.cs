@@ -25,7 +25,6 @@ namespace BallPredict.Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] SeasonPredictionInput input)
         {
-            Console.WriteLine("hæ");
             var userId = JwtHelper.GetUserIdFromToken(Request.Headers["Authorization"].ToString());
 
             var success = await _service.SubmitSeasonPrediction(input.Category, input.Guess, userId);

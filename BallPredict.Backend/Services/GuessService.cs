@@ -33,7 +33,6 @@ namespace BallPredict.Backend.Services
             {
                 return cachedGuesses.Where(g => userIds.Contains(g.userId)).ToList();
             }
-            Console.WriteLine("Hér" + userIds + leagueId);
             var guesses = await _supabaseClient
                 .From<Guess>()
                 .Select("*")
@@ -44,7 +43,6 @@ namespace BallPredict.Backend.Services
             {
                 SlidingExpiration = TimeSpan.FromMinutes(5)
             });
-            Console.WriteLine(guesses);
             return guesses.Models.ToList();
         }
 
