@@ -36,7 +36,7 @@ namespace BallPredict.Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> HandleWebhook([FromBody] ClerkUserCreatedPayload payload)
         {
-            Console.WriteLine("Received Clerk webhook event: " + payload.Type + ", Data er: " + JsonSerializer.Serialize(payload.Data));
+            //Console.WriteLine("Received Clerk webhook event: " + payload.Type + ", Data er: " + JsonSerializer.Serialize(payload.Data));
 
             if (payload.Type != "user.created")
                 return Ok("Ignored non-user.created event");

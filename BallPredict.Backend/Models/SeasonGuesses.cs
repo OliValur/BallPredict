@@ -7,6 +7,7 @@ namespace BallPredict.Backend.Models
     public class SeasonGuesses : BaseModel
     {
         [PrimaryKey("user_id")]
+        [Column("user_id")]
         public string UserId { get; set; }
 
         [Column("afc_north_winner")]
