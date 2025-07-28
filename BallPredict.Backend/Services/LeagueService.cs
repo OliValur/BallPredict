@@ -27,15 +27,23 @@ namespace BallPredict.Backend.Services
         {
             try
             {
+                //create 8 letter random invite code
+                league.InviteCode = Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper();
+
                 var result = await _supabaseClient.From<Leagues>()
                     .Insert(league);
                 var createdLeague = result.Models.FirstOrDefault();
+                
+
                 var leagueMembers = new LeagueMembers
                 {
                     LeagueId = createdLeague.Id,
                     PlayerId = league.OwnerId
                 };
                 await JoinLeague(leagueMembers);
+                //invalidate the cache for the user leagues
+                _memoryCache.Remove($"user_leagues_{league.OwnerId}");
+
                 return createdLeague;
             }
             catch (Exception ex)
@@ -85,7 +93,7 @@ namespace BallPredict.Backend.Services
                 .From<Leagues>()
                  .Filter(x => x.Id, Operator.In, leagueIds)
                 .Get();
-            // Cache the leagues for 60 minutes
+            // Cache the leagues for 5 minutes
             _memoryCache.Set($"user_leagues_{userId}", leaguesResponse.Models.ToList(), new MemoryCacheEntryOptions
             {
                 SlidingExpiration = TimeSpan.FromMinutes(5)
